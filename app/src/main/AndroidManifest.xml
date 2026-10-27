@@ -101,7 +101,7 @@
             android:excludeFromRecents="true"
             android:autoRemoveFromRecents="true"
             android:taskAffinity=""
-            android:theme="@style/Theme.Katapult" />
+            android:theme="@style/Theme.Katapult.Unlock" />
 
         <service
             android:name=".lockscreen.KatapultDreamService"

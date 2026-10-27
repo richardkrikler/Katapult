@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Theme.Katapult" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:statusBarColor">@color/white</item>
         <item name="android:navigationBarColor">@color/white</item>
@@ -6,5 +6,11 @@
         <item name="android:windowLightNavigationBar">true</item>
         <item name="android:windowAnimationStyle">@null</item>
         <item name="android:colorBackground">@color/white</item>
+    </style>
+
+    <!-- NotificationOpenActivity is only on screen while the keyguard asks for the PIN, so it
+         shows no app icon splash. -->
+    <style name="Theme.Katapult.Unlock">
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="31">@android:color/transparent</item>
     </style>
 </resources>
