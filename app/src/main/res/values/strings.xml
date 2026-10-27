@@ -226,6 +226,7 @@
     <string name="lockscreen_readme_desc">About the accessibility permission and widget controls</string>
     <string name="lockscreen_readme_privacy">This feature draws over the lock screen using an accessibility overlay. That permission sounds scary, but Katapult uses it only to display the widget and to read the lock screen itself, never your apps, so the widget can hide when the PIN screen appears. Nothing is recorded or shared; the open source code is the proof.</string>
     <string name="lockscreen_readme_usage">Long-press the widget to adjust it: drag to move, drag the handle below it to resize. Tap it once to save and finish.</string>
+    <string name="lockscreen_readme_tap">Tap an app to open its newest notification. You unlock first, as with any notification.</string>
     <string name="screensaver">Screensaver</string>
     <string name="screensaver_setup_message">Katapult isn\'t selected as the screen saver yet. Open Screen saver settings and choose Katapult, then start it from the home menu.</string>
     <string name="screensaver_open_settings">Open screensaver settings</string>

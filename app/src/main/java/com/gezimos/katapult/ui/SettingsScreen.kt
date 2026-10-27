@@ -1235,6 +1235,13 @@ fun SettingsScreen(viewModel: MainViewModel) {
                 fontSize = 14.sp,
                 fontFamily = LatoFamily,
                 color = LocalInk.current,
+                modifier = Modifier.padding(bottom = 12.dp),
+            )
+            Text(
+                text = stringResource(R.string.lockscreen_readme_tap),
+                fontSize = 14.sp,
+                fontFamily = LatoFamily,
+                color = LocalInk.current,
             )
         }
     }

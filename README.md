@@ -50,7 +50,7 @@
 - **Rename apps**: long-press any app in the grid
 - **App context menu**: Reorder, Rename, Hide, App Info, Uninstall
 - **Reorder apps**: swap-based reordering from the context menu, with reset to alphabetical option
-- **Lockscreen Notifications (experimental)**: per-app notification counts on the lock screen, with an app allowlist and sort order. Long-press the widget to move/resize it, tap to save.
+- **Lockscreen Notifications (experimental)**: per-app notification counts on the lock screen, with an app allowlist and sort order. Tap an app to open its newest notification (unlocks first). Long-press the widget to move/resize it, tap to save.
 - **Screensaver (experimental)**: a Katapult screen saver showing the home clock, date, alarm, battery, and up to 4 notification rows. Start it with a two-finger long-press on the home screen (or the home long-press menu); the power button exits. Select Katapult once in system Screen saver settings (Settings → Experimental → Screensaver opens it).
 
 ## Permissions

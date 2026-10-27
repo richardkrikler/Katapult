@@ -87,11 +87,15 @@ import kotlin.math.roundToInt
  * one-finger drag moves the widget, dragging the bottom handle resizes it (rows), and
  * a single tap (or 8s of no touches) exits. Position and row count are remembered.
  *
+ * A single tap on a row opens that app's latest notification via NotificationOpenActivity.
+ *
  * The whole feature is contained here so it can be scrapped easily. To remove it, delete:
- * this package, the <service> entry in AndroidManifest.xml, res/xml/lockscreen_widget_service.xml,
+ * this package, the <service> and NotificationOpenActivity entries in AndroidManifest.xml,
+ * LockscreenPrivacyTest, res/xml/lockscreen_widget_service.xml,
  * the Experimental section in SettingsScreen (toggle + Lockscreen Notification Apps dialog),
- * the lockscreenWidget prefs in PrefsManager, the onCountsChangedExtra hook in
- * NotificationListener, and the lockscreen_widget and section_experimental strings.
+ * the lockscreenWidget prefs in PrefsManager, the onCountsChangedExtra hook and the
+ * activeFor/find/lockscreenVisibilityOverride/cancel helpers in NotificationListener,
+ * and the lockscreen_widget and section_experimental strings.
  */
 class LockscreenWidgetService :
     AccessibilityService(), LifecycleOwner, ViewModelStoreOwner, SavedStateRegistryOwner {
@@ -685,6 +689,8 @@ class LockscreenWidgetService :
         var startParamY = 0
         var startRows = 0
         var mode = GestureMode.NONE
+        // Outside edit mode: a press that neither moved nor turned into a long-press.
+        var tapCandidate = false
         val slop = dp(12f).toFloat()
         val pendingEdit = Runnable {
             if (!editing) enterEdit()
@@ -702,6 +708,7 @@ class LockscreenWidgetService :
                     startRawY = event.rawY
                     startParamY = params.y
                     startRows = visibleRows
+                    tapCandidate = !editing
                     mode = if (editing) {
                         if (event.y >= v.height - dp(44f)) GestureMode.RESIZE else GestureMode.TAP
                     } else {
@@ -712,16 +719,20 @@ class LockscreenWidgetService :
                     true
                 }
                 MotionEvent.ACTION_POINTER_DOWN -> {
-                    // A second finger means this isn't a long-press.
+                    // A second finger means this isn't a long-press, or a tap.
                     mainHandler.removeCallbacks(pendingEdit)
+                    tapCandidate = false
                     true
                 }
                 MotionEvent.ACTION_MOVE -> {
                     val dx = event.rawX - startRawX
                     val dy = event.rawY - startRawY
                     if (!editing) {
-                        // Fingers wandered — this isn't a long-press, cancel activation.
-                        if (hypot(dx, dy) > slop) mainHandler.removeCallbacks(pendingEdit)
+                        // Fingers wandered — this isn't a long-press or a tap, cancel activation.
+                        if (hypot(dx, dy) > slop) {
+                            mainHandler.removeCallbacks(pendingEdit)
+                            tapCandidate = false
+                        }
                         return@setOnTouchListener true
                     }
                     when (mode) {
@@ -746,6 +757,11 @@ class LockscreenWidgetService :
                 }
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_POINTER_UP -> {
                     mainHandler.removeCallbacks(pendingEdit)
+                    // editing is set by the long-press, so a press that became one never opens.
+                    if (tapCandidate && !editing && event.actionMasked == MotionEvent.ACTION_UP) {
+                        rowAt(event.rawX, event.rawY)?.let { openFromLockscreen(it) }
+                    }
+                    tapCandidate = false
                     if (editing && event.actionMasked == MotionEvent.ACTION_UP) {
                         when (mode) {
                             GestureMode.TAP -> exitEdit()
@@ -759,6 +775,42 @@ class LockscreenWidgetService :
                 else -> false
             }
         }
+    }
+
+    // --- Tap to open ---
+
+    /** The package of the visible row under the screen point, if any. */
+    private fun rowAt(rawX: Float, rawY: Float): String? {
+        val loc = IntArray(2)
+        return rowViews.firstOrNull { row ->
+            row.visibility == View.VISIBLE && run {
+                row.getLocationOnScreen(loc)
+                rawX >= loc[0] && rawX < loc[0] + row.width && rawY >= loc[1] && rawY < loc[1] + row.height
+            }
+        }?.tag as? String
+    }
+
+    /**
+     * Opens the app's latest notification the lock screen may show (unlocking first), or
+     * the app itself when there is none — e.g. the Mudita call/SMS badges, which come
+     * from the call log and SMS database rather than notifications.
+     */
+    private fun openFromLockscreen(pkg: String) {
+        val privacy = LockscreenPrivacy.read(this)
+        val latest = NotificationListener.activeFor(pkg)
+            .filter {
+                LockscreenPrivacy.decide(
+                    privacy,
+                    it.notification.visibility,
+                    NotificationListener.lockscreenVisibilityOverride(it.key),
+                ) != LockscreenPrivacy.Visibility.HIDE
+            }
+            // `when` is the message time; postTime moves whenever an app re-posts all its
+            // notifications (AOSP Messaging does on every new SMS).
+            .maxWithOrNull(compareBy({ it.notification.`when` }, { it.postTime }))
+        try {
+            startActivity(NotificationOpenActivity.intent(this, pkg, latest?.key))
+        } catch (_: Exception) {}
     }
 
     // --- Widget view ---
@@ -791,6 +843,7 @@ class LockscreenWidgetService :
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
                 setPadding(0, dp(4f), 0, dp(4f))
+                tag = pkg // read back by rowAt() on tap
             }
             iconBitmap(pkg, iconSize, ink)?.let { bmp ->
                 row.addView(ImageView(this).apply {
