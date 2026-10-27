@@ -23,6 +23,11 @@ android {
         versionName = "1.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // The repo whose releases the in-app updater follows: the one CI built from, so a
+        // fork's builds update from the fork (it signs with its own key).
+        buildConfigField("String", "RELEASES_REPO",
+            "\"${System.getenv("GITHUB_REPOSITORY") ?: "gezimos/Katapult"}\"")
     }
 
     signingConfigs {
@@ -58,6 +63,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

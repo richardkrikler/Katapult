@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import androidx.core.content.FileProvider
+import com.gezimos.katapult.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
@@ -22,7 +23,7 @@ import java.net.URL
 object UpdateChecker {
 
     private const val LATEST_URL =
-        "https://api.github.com/repos/gezimos/Katapult/releases/latest"
+        "https://api.github.com/repos/${BuildConfig.RELEASES_REPO}/releases/latest"
     private const val APK_FILE = "update.apk"
 
     data class ReleaseInfo(
