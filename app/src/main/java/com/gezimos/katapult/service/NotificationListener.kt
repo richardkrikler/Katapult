@@ -166,7 +166,13 @@ class NotificationListener : NotificationListenerService() {
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
-        if (!shouldCount(sbn)) return
+        if (!shouldCount(sbn)) {
+            // A counted key can come back uncountable, e.g. AOSP Messaging re-posts its
+            // single-conversation notification as the group summary once a second
+            // conversation arrives.
+            uncount(sbn)
+            return
+        }
         val set = keysByPkg.getOrPut(sbn.packageName) { newKeySet() }
         lastPostByPkg.merge(sbn.packageName, sbn.postTime) { a, b -> maxOf(a, b) }
         if (set.add(sbn.key)) {
@@ -179,6 +185,10 @@ class NotificationListener : NotificationListenerService() {
             set.remove(sbn.key)
             if (set.isEmpty()) clearedKeys.remove(sbn.packageName)
         }
+        uncount(sbn)
+    }
+
+    private fun uncount(sbn: StatusBarNotification) {
         val set = keysByPkg[sbn.packageName] ?: return
         if (set.remove(sbn.key)) {
             if (set.isEmpty()) {
