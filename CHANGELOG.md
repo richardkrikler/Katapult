@@ -5,7 +5,7 @@ All notable changes to Katapult are documented here.
 ## [Unreleased]
 
 ### Added
-- **Lockscreen Notifications**: tap an app in the widget to open its newest notification, like tapping it in the notification shade. You unlock first (PIN screen), then the chat or call opens and the notification clears if the app asked for that. The Mudita call/SMS rows, which don't come from a notification, open the app. Notifications hidden by Android's lock screen privacy settings aren't opened directly; the app opens instead.
+- **Lockscreen Notifications**: tap an app in the widget to open its newest notification, like tapping it in the notification shade. You unlock first (PIN screen), then the chat or call opens and the notification clears if the app asked for that. The Mudita Phone row opens the call log, since Mudita Dial posts no missed-call notification. Notifications hidden by Android's lock screen privacy settings aren't opened directly; the app opens instead.
 
 ### Fixed
 - Notification counts on home and the lock screen no longer stay one too high when an app turns a notification into a group summary (AOSP Messaging does this once a second conversation arrives).

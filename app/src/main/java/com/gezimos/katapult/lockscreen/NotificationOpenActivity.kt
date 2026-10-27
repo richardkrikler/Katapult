@@ -9,6 +9,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.provider.CallLog
+import com.gezimos.katapult.service.DirectBadgeHelper
 import com.gezimos.katapult.service.NotificationListener
 
 /**
@@ -68,7 +70,14 @@ class NotificationOpenActivity : Activity() {
                 NotificationListener.cancel(sbn.key)
             }
         } else {
-            packageManager.getLaunchIntentForPackage(packageName)?.let {
+            // Mudita Dial posts no missed-call notification; open its call log rather than
+            // whichever tab was last used.
+            val fallback = if (packageName == DirectBadgeHelper.MUDITA_DIAL) {
+                Intent(Intent.ACTION_VIEW).setType(CallLog.Calls.CONTENT_TYPE).setPackage(packageName)
+            } else {
+                packageManager.getLaunchIntentForPackage(packageName)
+            }
+            fallback?.let {
                 try { startActivity(it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) } catch (_: Exception) {}
             }
         }
