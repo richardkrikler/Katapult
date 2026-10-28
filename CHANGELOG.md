@@ -2,6 +2,15 @@
 
 All notable changes to Katapult are documented here.
 
+## [Unreleased]
+
+### Changed
+- **About** links to this fork's GitHub for source code, issues and updates, credits Gezim's original Katapult, and keeps a link to support him.
+
+### Removed
+- Translations: Katapult is English only.
+- The donate entry in the home long-press menu, and the YouTube and inkOS links in About.
+
 ## [1.6-rk.1]
 
 ### Added
