@@ -200,13 +200,10 @@
     <string name="screensaver_show_notifications_desc">Mostrar o número de notificações na proteção de ecrã</string>
     <string name="screensaver_enable_desc">Mostrar relógio e notificações com um gesto de pinça no ecrã inicial</string>
     <string name="screensaver_system">Proteção de ecrã do sistema</string>
-    <string name="donate_desc">Apoie o Katapult no Buy Me a Coffee</string>
-    <string name="github_label">github.com/gezimos</string>
-    <string name="github_desc">Código-fonte e outros projetos</string>
-    <string name="youtube_label">youtube.com/@gezimos</string>
-    <string name="youtube_desc">Vídeos e novidades</string>
-    <string name="inkos_label">inkOS</string>
-    <string name="inkos_desc">Launcher e-ink do mesmo programador</string>
+    <string name="donate_desc">Apoie Gezim, o autor original do Katapult</string>
+    <string name="github_label">github.com/gezimos/Katapult</string>
+    <string name="github_desc">O Katapult original de Gezim</string>
+    <string name="source_desc">Código-fonte, problemas e atualizações</string>
     <string name="lic_app_title">App License</string>
     <string name="lic_app_desc">GNU General Public License v3.0</string>
     <string name="lic_font_title">Font License</string>

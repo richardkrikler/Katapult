@@ -200,13 +200,10 @@
     <string name="screensaver_show_notifications_desc">Pokaż liczbę powiadomień na wygaszaczu ekranu</string>
     <string name="screensaver_enable_desc">Pokaż zegar i powiadomienia gestem szczypania na ekranie głównym</string>
     <string name="screensaver_system">Systemowy wygaszacz ekranu</string>
-    <string name="donate_desc">Wesprzyj Katapult na Buy Me a Coffee</string>
-    <string name="github_label">github.com/gezimos</string>
-    <string name="github_desc">Kod źródłowy i inne projekty</string>
-    <string name="youtube_label">youtube.com/@gezimos</string>
-    <string name="youtube_desc">Filmy i nowości</string>
-    <string name="inkos_label">inkOS</string>
-    <string name="inkos_desc">Launcher e-ink od tego samego dewelopera</string>
+    <string name="donate_desc">Wesprzyj Gezima, pierwotnego autora Katapulta</string>
+    <string name="github_label">github.com/gezimos/Katapult</string>
+    <string name="github_desc">Oryginalny Katapult autorstwa Gezima</string>
+    <string name="source_desc">Kod źródłowy, zgłoszenia i aktualizacje</string>
     <string name="lic_app_title">App License</string>
     <string name="lic_app_desc">GNU General Public License v3.0</string>
     <string name="lic_font_title">Font License</string>

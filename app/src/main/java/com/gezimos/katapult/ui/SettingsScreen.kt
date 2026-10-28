@@ -858,7 +858,10 @@ fun SettingsScreen(viewModel: MainViewModel) {
                     description = stringResource(R.string.lic_app_desc),
                     onClick = {
                         context.startActivity(
-                            Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/gezimos/Katapult/blob/main/LICENSE")),
+                            Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse("https://github.com/richardkrikler/Katapult/blob/main/LICENSE"),
+                            ),
                         )
                     },
                 )
@@ -869,7 +872,10 @@ fun SettingsScreen(viewModel: MainViewModel) {
                     description = stringResource(R.string.lic_font_desc),
                     onClick = {
                         context.startActivity(
-                            Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/gezimos/Katapult/blob/main/LICENSE-Lato.txt")),
+                            Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse("https://github.com/richardkrikler/Katapult/blob/main/LICENSE-Lato.txt"),
+                            ),
                         )
                     },
                 )
@@ -903,11 +909,11 @@ fun SettingsScreen(viewModel: MainViewModel) {
             }
             add {
                 SettingsActionRow(
-                    title = stringResource(R.string.donate_label),
-                    description = stringResource(R.string.donate_desc),
+                    title = stringResource(R.string.source_label),
+                    description = stringResource(R.string.source_desc),
                     onClick = {
                         context.startActivity(
-                            Intent(Intent.ACTION_VIEW, Uri.parse("https://www.buymeacoffee.com/gezimos")),
+                            Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/richardkrikler/Katapult")),
                         )
                     },
                 )
@@ -918,29 +924,18 @@ fun SettingsScreen(viewModel: MainViewModel) {
                     description = stringResource(R.string.github_desc),
                     onClick = {
                         context.startActivity(
-                            Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/gezimos")),
+                            Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/gezimos/Katapult")),
                         )
                     },
                 )
             }
             add {
                 SettingsActionRow(
-                    title = stringResource(R.string.youtube_label),
-                    description = stringResource(R.string.youtube_desc),
+                    title = stringResource(R.string.donate_label),
+                    description = stringResource(R.string.donate_desc),
                     onClick = {
                         context.startActivity(
-                            Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/@gezimos")),
-                        )
-                    },
-                )
-            }
-            add {
-                SettingsActionRow(
-                    title = stringResource(R.string.inkos_label),
-                    description = stringResource(R.string.inkos_desc),
-                    onClick = {
-                        context.startActivity(
-                            Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/gezimos/inkOS")),
+                            Intent(Intent.ACTION_VIEW, Uri.parse("https://www.buymeacoffee.com/gezimos")),
                         )
                     },
                 )

@@ -200,13 +200,10 @@
     <string name="screensaver_show_notifications_desc">Toon meldingsaantallen op de schermbeveiliging</string>
     <string name="screensaver_enable_desc">Toon klok en meldingen met een knijpbeweging op het startscherm</string>
     <string name="screensaver_system">Systeemschermbeveiliging</string>
-    <string name="donate_desc">Steun Katapult op Buy Me a Coffee</string>
-    <string name="github_label">github.com/gezimos</string>
-    <string name="github_desc">Broncode en andere projecten</string>
-    <string name="youtube_label">youtube.com/@gezimos</string>
-    <string name="youtube_desc">Video\'s en nieuws</string>
-    <string name="inkos_label">inkOS</string>
-    <string name="inkos_desc">E-ink launcher van dezelfde ontwikkelaar</string>
+    <string name="donate_desc">Steun Gezim, de oorspronkelijke maker van Katapult</string>
+    <string name="github_label">github.com/gezimos/Katapult</string>
+    <string name="github_desc">De originele Katapult van Gezim</string>
+    <string name="source_desc">Broncode, meldingen en updates</string>
     <string name="lic_app_title">App License</string>
     <string name="lic_app_desc">GNU General Public License v3.0</string>
     <string name="lic_font_title">Font License</string>

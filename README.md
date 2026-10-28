@@ -3,6 +3,8 @@
 	<h2>Katapult — A simple grid launcher for Mudita Kompakt</h2>
 </div>
 
+A fork of [Katapult](https://github.com/gezimos/Katapult) by Gezim, maintained and modified by Richard Krikler since October 2026.
+
 > [!NOTE]
 > To install, download the latest APK from [Releases](https://github.com/richardkrikler/Katapult/releases) and install it on your device using Mudita Center or ADB/webADB.
 
@@ -95,4 +97,4 @@ There are no allowlists. Go to Settings > App Notifications, tap the app, and di
 
 ## Appreciation
 
-This project builds on [Katapult](https://github.com/gezimos/Katapult) by Gezim, who created the launcher and its design. Thank you for the original work and for releasing it as open source.
+This project builds on [Katapult](https://github.com/gezimos/Katapult) by Gezim, who created the launcher and its design. Thank you for the original work and for releasing it as open source. If you enjoy Katapult, consider [supporting Gezim](https://buymeacoffee.com/gezimos).

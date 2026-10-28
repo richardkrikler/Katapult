@@ -200,13 +200,10 @@
     <string name="screensaver_show_notifications_desc">Zobrazit počty oznámení na spořiči obrazovky</string>
     <string name="screensaver_enable_desc">Zobrazit hodiny a oznámení sevřením na domovské obrazovce</string>
     <string name="screensaver_system">Systémový spořič obrazovky</string>
-    <string name="donate_desc">Podpořte Katapult na Buy Me a Coffee</string>
-    <string name="github_label">github.com/gezimos</string>
-    <string name="github_desc">Zdrojový kód a další projekty</string>
-    <string name="youtube_label">youtube.com/@gezimos</string>
-    <string name="youtube_desc">Videa a novinky</string>
-    <string name="inkos_label">inkOS</string>
-    <string name="inkos_desc">E-ink launcher od stejného vývojáře</string>
+    <string name="donate_desc">Podpořte Gezima, původního autora Katapultu</string>
+    <string name="github_label">github.com/gezimos/Katapult</string>
+    <string name="github_desc">Původní Katapult od Gezima</string>
+    <string name="source_desc">Zdrojový kód, chyby a aktualizace</string>
     <string name="lic_app_title">App License</string>
     <string name="lic_app_desc">GNU General Public License v3.0</string>
     <string name="lic_font_title">Font License</string>

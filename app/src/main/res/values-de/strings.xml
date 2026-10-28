@@ -200,13 +200,10 @@
     <string name="screensaver_show_notifications_desc">Benachrichtigungsanzahl auf dem Bildschirmschoner anzeigen</string>
     <string name="screensaver_enable_desc">Uhr und Benachrichtigungen per Zusammenziehen auf dem Home anzeigen</string>
     <string name="screensaver_system">System-Bildschirmschoner</string>
-    <string name="donate_desc">Unterstütze Katapult auf Buy Me a Coffee</string>
-    <string name="github_label">github.com/gezimos</string>
-    <string name="github_desc">Quellcode und weitere Projekte</string>
-    <string name="youtube_label">youtube.com/@gezimos</string>
-    <string name="youtube_desc">Videos und Neuigkeiten</string>
-    <string name="inkos_label">inkOS</string>
-    <string name="inkos_desc">E-Ink-Launcher vom selben Entwickler</string>
+    <string name="donate_desc">Unterstütze Gezim, den ursprünglichen Autor von Katapult</string>
+    <string name="github_label">github.com/gezimos/Katapult</string>
+    <string name="github_desc">Das ursprüngliche Katapult von Gezim</string>
+    <string name="source_desc">Quellcode, Fehlermeldungen und Updates</string>
     <string name="lic_app_title">App License</string>
     <string name="lic_app_desc">GNU General Public License v3.0</string>
     <string name="lic_font_title">Font License</string>
