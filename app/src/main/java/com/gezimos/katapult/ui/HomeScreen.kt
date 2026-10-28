@@ -156,7 +156,6 @@ fun HomeScreen(
             when (viewModel.prefs.homeLongPressAction) {
                 PrefsManager.HOME_LONG_PRESS_EDIT -> pickerSlot = slot
                 PrefsManager.HOME_LONG_PRESS_APP_INFO -> viewModel.launchIntent(
-                    context,
                     Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                         data = Uri.parse("package:$pkg")
                     },
@@ -187,11 +186,10 @@ fun HomeScreen(
                         if (pressed.size >= 2) {
                             pinch = true
                             val distance = (pressed[0].position - pressed[1].position).getDistance()
+                            val pinchedIn = pinchStart > 80.dp.toPx() && distance < pinchStart * 0.6f
                             if (pinchStart == 0f) {
                                 pinchStart = distance
-                            } else if (!pinchFired && viewModel.prefs.screensaverEnabled && pinchStart > 80.dp.toPx() &&
-                                distance < pinchStart * 0.6f
-                            ) {
+                            } else if (!pinchFired && viewModel.prefs.screensaverEnabled && pinchedIn) {
                                 pinchFired = true
                                 viewModel.startScreensaver(context)
                             }
@@ -319,7 +317,7 @@ fun HomeScreen(
                                 viewModel.mediaInfo?.let { media ->
                                     MusicWidget(
                                         info = media,
-                                        onOpenApp = { viewModel.mediaOpenApp(context) },
+                                        onOpenApp = { viewModel.mediaOpenApp() },
                                         onPrevious = { viewModel.mediaPrevious() },
                                         onPlayPause = { viewModel.mediaPlayPause() },
                                         onNext = { viewModel.mediaNext() },

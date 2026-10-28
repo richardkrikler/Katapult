@@ -106,9 +106,8 @@ fun AppContextMenu(
         ActivityResultContracts.RequestPermission(),
     ) { granted -> if (granted) viewModel.clearMissedCalls() }
 
-    if (!viewModel.showRenameDialog && !viewModel.reorderMode &&
-        changeIconApp == null && shortcutsApp == null
-    ) {
+    val otherDialogOpen = viewModel.showRenameDialog || changeIconApp != null || shortcutsApp != null
+    if (!otherDialogOpen && !viewModel.reorderMode) {
         BottomSheet(onDismiss = onDismiss) {
             Text(
                 text = app.label,
@@ -138,7 +137,6 @@ fun AppContextMenu(
                 BottomSheetOption(stringResource(R.string.app_info), icon = Icons.Rounded.Info) {
                     onDismiss()
                     viewModel.launchIntent(
-                        context,
                         Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                             data = Uri.parse("package:${app.packageName}")
                         },
@@ -162,7 +160,6 @@ fun AppContextMenu(
                 BottomSheetOption(stringResource(R.string.app_info), icon = Icons.Rounded.Info) {
                     onDismiss()
                     viewModel.launchIntent(
-                        context,
                         Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                             data = Uri.parse("package:${app.packageName}")
                         },
@@ -171,7 +168,6 @@ fun AppContextMenu(
                 BottomSheetOption(stringResource(R.string.notifications), icon = Icons.Rounded.Notifications) {
                     onDismiss()
                     viewModel.launchIntent(
-                        context,
                         Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
                             putExtra(Settings.EXTRA_APP_PACKAGE, app.packageName)
                         },
@@ -215,7 +211,6 @@ fun AppContextMenu(
                     BottomSheetOption(stringResource(R.string.uninstall), icon = Icons.Rounded.Delete) {
                         onDismiss()
                         viewModel.launchIntent(
-                            context,
                             Intent(Intent.ACTION_UNINSTALL_PACKAGE).apply {
                                 data = Uri.parse("package:${app.packageName}")
                             },

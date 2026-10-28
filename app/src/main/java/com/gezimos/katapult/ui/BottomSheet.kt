@@ -281,5 +281,7 @@ private class BottomSheetDialog(
         return result
     }
 
-    override fun cancel() {}
+    override fun cancel() {
+        // Closing always goes through onDismiss (back, outside touch), so Compose state stays in charge.
+    }
 }

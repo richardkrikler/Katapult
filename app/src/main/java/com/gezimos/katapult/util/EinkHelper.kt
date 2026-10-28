@@ -48,6 +48,8 @@ class EinkHelper(
     }
 
     @SuppressLint("PrivateApi")
+    // A vendor binder: any failure must fall back to the device default, never crash.
+    @Suppress("TooGenericExceptionCaught")
     fun initializeMeinkService() {
         if (meinkService != null) return
         try {
@@ -66,6 +68,7 @@ class EinkHelper(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     fun setMeinkMode(mode: Int) {
         if (mode == MEINK_MODE_DISABLED) {
             currentMeinkMode = mode

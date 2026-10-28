@@ -282,7 +282,9 @@ class LockscreenWidgetService :
         evaluate()
     }
 
-    override fun onInterrupt() {}
+    override fun onInterrupt() {
+        // Required override; the service gives no feedback that could be interrupted.
+    }
 
     override fun onDestroy() {
         if (instance === this) instance = null

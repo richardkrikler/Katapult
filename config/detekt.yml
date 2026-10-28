@@ -2,3 +2,21 @@
 naming:
   FunctionNaming:
     ignoreAnnotated: ['Composable']
+
+style:
+  # ktlint owns formatting, line length included.
+  MaxLineLength:
+    active: false
+  # Sizes, alphas and offsets are the point of a Composable, not magic.
+  MagicNumber:
+    ignoreAnnotated: ['Composable']
+    ignorePropertyDeclaration: true
+  ReturnCount:
+    excludeGuardClauses: true
+  LoopWithTooManyJumpStatements:
+    maxJumpCount: 2
+
+complexity:
+  # Composables take their state and callbacks as parameters by design.
+  LongParameterList:
+    ignoreAnnotated: ['Composable']

@@ -558,10 +558,7 @@ class MainViewModel(
         }
     }
 
-    fun launchIntent(
-        context: Context,
-        intent: Intent,
-    ) {
+    fun launchIntent(intent: Intent) {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         try {
             ctx.startActivity(intent)
@@ -751,7 +748,7 @@ class MainViewModel(
         audioHelper.stop()
     }
 
-    fun mediaOpenApp(context: Context) {
+    fun mediaOpenApp() {
         audioHelper.openApp()
     }
 

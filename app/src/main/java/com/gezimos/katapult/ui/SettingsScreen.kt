@@ -1221,7 +1221,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
                     }
                 }
                 if (groupStart < rowHeights.size) groups.add(groupStart until rowHeights.size)
-                if (groups.isEmpty()) groups.add(0 until 0)
+                if (groups.isEmpty()) groups.add(IntRange.EMPTY)
 
                 if (pageCount != groups.size) pageCount = groups.size
 
@@ -2625,54 +2625,6 @@ fun SettingsToggleRow(
                         if (checked) LocalSurface.current else LocalInk.current,
                         CircleShape,
                     ),
-            )
-        }
-    }
-}
-
-@Composable
-private fun SettingsButtonRow(
-    title: String,
-    description: String,
-    buttonText: String,
-    onClick: () -> Unit,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = title,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = LatoFamily,
-                color = LocalInk.current,
-            )
-            Text(
-                text = description,
-                fontSize = 14.sp,
-                fontFamily = LatoFamily,
-                color = LocalInk.current,
-            )
-        }
-        Spacer(Modifier.width(16.dp))
-        val trackShape = RoundedCornerShape(10.dp)
-        Box(
-            modifier = Modifier
-                .border(2.5.dp, LocalInk.current, trackShape)
-                .clickable(onClick = onClick)
-                .padding(horizontal = 10.dp, vertical = 4.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = buttonText,
-                fontSize = 12.sp,
-                fontFamily = LatoFamily,
-                fontWeight = FontWeight.Bold,
-                color = LocalInk.current,
             )
         }
     }
