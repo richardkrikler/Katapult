@@ -11,30 +11,30 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsIgnoringVisibility
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.statusBarsIgnoringVisibility
-import androidx.compose.foundation.layout.navigationBarsIgnoringVisibility
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -49,15 +49,15 @@ import androidx.compose.material.icons.rounded.Battery5Bar
 import androidx.compose.material.icons.rounded.Battery6Bar
 import androidx.compose.material.icons.rounded.BatteryChargingFull
 import androidx.compose.material.icons.rounded.BatteryFull
+import androidx.compose.material.icons.rounded.Bedtime
+import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.SkipNext
 import androidx.compose.material.icons.rounded.SkipPrevious
 import androidx.compose.material.icons.rounded.Stop
-import androidx.compose.material.icons.rounded.Bedtime
-import androidx.compose.material.icons.rounded.FavoriteBorder
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material.icons.rounded.Wallpaper
 import androidx.compose.material3.Icon
@@ -70,18 +70,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.input.pointer.positionChange
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -98,9 +98,9 @@ import com.gezimos.katapult.Screen
 import com.gezimos.katapult.lockscreen.LockscreenWidgetService
 import com.gezimos.katapult.model.AppModel
 import com.gezimos.katapult.service.DirectBadgeHelper
-import com.gezimos.katapult.util.DeviceHelper
 import com.gezimos.katapult.util.AudioWidgetHelper
 import com.gezimos.katapult.util.BrightnessHelper
+import com.gezimos.katapult.util.DeviceHelper
 import com.gezimos.katapult.util.IconUtility
 import com.gezimos.katapult.util.PrefsManager
 import com.gezimos.katapult.util.WeatherHelper
@@ -123,12 +123,16 @@ fun HomeScreen(
 
     val slotAsApp: (String) -> AppModel? = { slot ->
         val pkg = viewModel.getShortcutPackage(slot)
-        if (pkg == null) null else AppModel(
-            packageName = pkg,
-            label = viewModel.getShortcutLabel(slot, pkg),
-            activityName = viewModel.getShortcutActivity(slot),
-            shortcutId = viewModel.prefs.loadSlotShortcutId(slot) ?: "",
-        )
+        if (pkg == null) {
+            null
+        } else {
+            AppModel(
+                packageName = pkg,
+                label = viewModel.getShortcutLabel(slot, pkg),
+                activityName = viewModel.getShortcutActivity(slot),
+                shortcutId = viewModel.prefs.loadSlotShortcutId(slot) ?: "",
+            )
+        }
     }
 
     val clearNotificationsFor: (String) -> Unit = { pkg ->
@@ -149,18 +153,20 @@ fun HomeScreen(
         val pkg = viewModel.getShortcutPackage(slot)
         if (pkg == null) {
             pickerSlot = slot
-        } else when (viewModel.prefs.homeLongPressAction) {
-            PrefsManager.HOME_LONG_PRESS_EDIT -> pickerSlot = slot
-            PrefsManager.HOME_LONG_PRESS_APP_INFO -> viewModel.launchIntent(
-                context,
-                Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                    data = Uri.parse("package:$pkg")
-                },
-            )
-            PrefsManager.HOME_LONG_PRESS_MENU ->
-                viewModel.contextMenuApp = slotAsApp(slot)
-            PrefsManager.HOME_LONG_PRESS_CLEAR -> clearNotificationsFor(pkg)
-            else -> {}
+        } else {
+            when (viewModel.prefs.homeLongPressAction) {
+                PrefsManager.HOME_LONG_PRESS_EDIT -> pickerSlot = slot
+                PrefsManager.HOME_LONG_PRESS_APP_INFO -> viewModel.launchIntent(
+                    context,
+                    Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.parse("package:$pkg")
+                    },
+                )
+                PrefsManager.HOME_LONG_PRESS_MENU ->
+                    viewModel.contextMenuApp = slotAsApp(slot)
+                PrefsManager.HOME_LONG_PRESS_CLEAR -> clearNotificationsFor(pkg)
+                else -> {}
+            }
         }
     }
 
@@ -184,7 +190,9 @@ fun HomeScreen(
                             val distance = (pressed[0].position - pressed[1].position).getDistance()
                             if (pinchStart == 0f) {
                                 pinchStart = distance
-                            } else if (!pinchFired && viewModel.prefs.screensaverEnabled && pinchStart > 80.dp.toPx() && distance < pinchStart * 0.6f) {
+                            } else if (!pinchFired && viewModel.prefs.screensaverEnabled && pinchStart > 80.dp.toPx() &&
+                                distance < pinchStart * 0.6f
+                            ) {
                                 pinchFired = true
                                 viewModel.startScreensaver(context)
                             }
@@ -216,112 +224,154 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .then(
-                    if (!viewModel.prefs.hideStatusBar)
+                    if (!viewModel.prefs.hideStatusBar) {
                         Modifier.windowInsetsPadding(WindowInsets.statusBarsIgnoringVisibility)
-                    else Modifier
+                    } else {
+                        Modifier
+                    },
                 )
                 .windowInsetsPadding(WindowInsets.navigationBarsIgnoringVisibility)
                 .padding(PagePadding),
         ) {
-        val gridRowHeight = if (viewModel.prefs.hideAppNames) AllAppsRowHeightNoLabels else AllAppsRowHeight
-        val gridRows = (maxHeight / gridRowHeight).toInt().coerceAtLeast(1)
-        val dockRows = if (viewModel.prefs.homeExtraRow) 2 else 1
-        val topWeight = (gridRows - dockRows).coerceAtLeast(1).toFloat()
-        Column(modifier = Modifier.fillMaxSize()) {
-            Column(modifier = Modifier.fillMaxWidth().weight(topWeight)) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .pointerInput(Unit) {
-                        detectTapGestures(
-                            onLongPress = { showMenu = true },
-                            onDoubleTap = {
-                                when (viewModel.prefs.doubleTapAction) {
-                                    PrefsManager.DOUBLE_TAP_BRIGHTNESS ->
-                                        BrightnessHelper.toggleBrightness(context, viewModel.prefs)
-                                    PrefsManager.DOUBLE_TAP_LOCK ->
-                                        LockscreenWidgetService.lockScreen()
+            val gridRowHeight = if (viewModel.prefs.hideAppNames) AllAppsRowHeightNoLabels else AllAppsRowHeight
+            val gridRows = (maxHeight / gridRowHeight).toInt().coerceAtLeast(1)
+            val dockRows = if (viewModel.prefs.homeExtraRow) 2 else 1
+            val topWeight = (gridRows - dockRows).coerceAtLeast(1).toFloat()
+            Column(modifier = Modifier.fillMaxSize()) {
+                Column(modifier = Modifier.fillMaxWidth().weight(topWeight)) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                            .pointerInput(Unit) {
+                                detectTapGestures(
+                                    onLongPress = { showMenu = true },
+                                    onDoubleTap = {
+                                        when (viewModel.prefs.doubleTapAction) {
+                                            PrefsManager.DOUBLE_TAP_BRIGHTNESS ->
+                                                BrightnessHelper.toggleBrightness(context, viewModel.prefs)
+                                            PrefsManager.DOUBLE_TAP_LOCK ->
+                                                LockscreenWidgetService.lockScreen()
+                                        }
+                                    },
+                                )
+                            },
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        ClockDisplay(
+                            clockTime = viewModel.clockTime,
+                            clockAmPm = viewModel.clockAmPm,
+                            clockDate = viewModel.clockDate,
+                            alarmTime = viewModel.alarmTime,
+                            batteryPercent = viewModel.batteryPercent,
+                            isCharging = viewModel.isCharging,
+                            showBattery = viewModel.prefs.showBattery,
+                            showAlarm = viewModel.prefs.showAlarm,
+                            weather = viewModel.weather,
+                            islandsActive = viewModel.prefs.homeIslands,
+                            topSpacing = if (viewModel.prefs.hideStatusBar) 32.dp else 8.dp,
+                            onClockClick = {
+                                val saved = viewModel.prefs.loadShortcut("clock")
+                                if (saved != null) {
+                                    viewModel.launchShortcut(context, "clock")
+                                } else {
+                                    pickerSlot = "clock"
+                                }
+                            },
+                            onClockLongClick = { handleSlotLongPress("clock") },
+                            onDateClick = {
+                                val saved = viewModel.prefs.loadShortcut("calendar")
+                                if (saved != null) {
+                                    viewModel.launchShortcut(context, "calendar")
+                                } else {
+                                    pickerSlot = "calendar"
+                                }
+                            },
+                            onDateLongClick = { handleSlotLongPress("calendar") },
+                            onWeatherClick = { WeatherHelper.openApp(context) },
+                            onBatteryClick = {
+                                val intent = Intent(Intent.ACTION_POWER_USAGE_SUMMARY)
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                try {
+                                    context.startActivity(intent)
+                                } catch (_: Exception) {
+                                    try {
+                                        context.startActivity(
+                                            Intent(android.provider.Settings.ACTION_BATTERY_SAVER_SETTINGS)
+                                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                                        )
+                                    } catch (_: Exception) {
+                                    }
                                 }
                             },
                         )
-                    },
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                ClockDisplay(
-                    clockTime = viewModel.clockTime,
-                    clockAmPm = viewModel.clockAmPm,
-                    clockDate = viewModel.clockDate,
-                    alarmTime = viewModel.alarmTime,
-                    batteryPercent = viewModel.batteryPercent,
-                    isCharging = viewModel.isCharging,
-                    showBattery = viewModel.prefs.showBattery,
-                    showAlarm = viewModel.prefs.showAlarm,
-                    weather = viewModel.weather,
-                    islandsActive = viewModel.prefs.homeIslands,
-                    topSpacing = if (viewModel.prefs.hideStatusBar) 32.dp else 8.dp,
-                    onClockClick = {
-                        val saved = viewModel.prefs.loadShortcut("clock")
-                        if (saved != null) {
-                            viewModel.launchShortcut(context, "clock")
-                        } else {
-                            pickerSlot = "clock"
-                        }
-                    },
-                    onClockLongClick = { handleSlotLongPress("clock") },
-                    onDateClick = {
-                        val saved = viewModel.prefs.loadShortcut("calendar")
-                        if (saved != null) {
-                            viewModel.launchShortcut(context, "calendar")
-                        } else {
-                            pickerSlot = "calendar"
-                        }
-                    },
-                    onDateLongClick = { handleSlotLongPress("calendar") },
-                    onWeatherClick = { WeatherHelper.openApp(context) },
-                    onBatteryClick = {
-                        val intent = Intent(Intent.ACTION_POWER_USAGE_SUMMARY)
-                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        try {
-                            context.startActivity(intent)
-                        } catch (_: Exception) {
-                            try {
-                                context.startActivity(
-                                    Intent(android.provider.Settings.ACTION_BATTERY_SAVER_SETTINGS)
-                                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                )
-                            } catch (_: Exception) { }
-                        }
-                    },
-                )
-            }
+                    }
 
-            if (viewModel.mediaInfo != null && !viewModel.prefs.disableMusicWidget) {
-                @Suppress("UnusedBoxWithConstraintsScope")
-                androidx.compose.foundation.layout.BoxWithConstraints(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp),
-                ) {
-                    val columnWidth = maxWidth / 3
-                    val iconPad = (columnWidth - LocalIconSize.current) / 2
-                    Box(Modifier.fillMaxWidth().padding(horizontal = iconPad)) {
-                        viewModel.mediaInfo?.let { media ->
-                            MusicWidget(
-                                info = media,
-                                onOpenApp = { viewModel.mediaOpenApp(context) },
-                                onPrevious = { viewModel.mediaPrevious() },
-                                onPlayPause = { viewModel.mediaPlayPause() },
-                                onNext = { viewModel.mediaNext() },
-                                onStop = { viewModel.mediaStop() },
+                    if (viewModel.mediaInfo != null && !viewModel.prefs.disableMusicWidget) {
+                        @Suppress("UnusedBoxWithConstraintsScope")
+                        androidx.compose.foundation.layout.BoxWithConstraints(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp),
+                        ) {
+                            val columnWidth = maxWidth / 3
+                            val iconPad = (columnWidth - LocalIconSize.current) / 2
+                            Box(Modifier.fillMaxWidth().padding(horizontal = iconPad)) {
+                                viewModel.mediaInfo?.let { media ->
+                                    MusicWidget(
+                                        info = media,
+                                        onOpenApp = { viewModel.mediaOpenApp(context) },
+                                        onPrevious = { viewModel.mediaPrevious() },
+                                        onPlayPause = { viewModel.mediaPlayPause() },
+                                        onNext = { viewModel.mediaNext() },
+                                        onStop = { viewModel.mediaStop() },
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (viewModel.prefs.homeExtraRow) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                            ShortcutItem(
+                                viewModel = viewModel,
+                                slot = "extra_left",
+                                defaultLabel = stringResource(R.string.music),
+                                refresh = viewModel.shortcutRefresh,
+                                onClick = { viewModel.launchShortcut(context, "extra_left") },
+                                onLongClick = { handleSlotLongPress("extra_left") },
+                            )
+                        }
+                        Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                            ShortcutItem(
+                                viewModel = viewModel,
+                                slot = "extra_center",
+                                defaultLabel = stringResource(R.string.calendar),
+                                refresh = viewModel.shortcutRefresh,
+                                onClick = { viewModel.launchShortcut(context, "extra_center") },
+                                onLongClick = { handleSlotLongPress("extra_center") },
+                            )
+                        }
+                        Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                            ShortcutItem(
+                                viewModel = viewModel,
+                                slot = "extra_right",
+                                defaultLabel = stringResource(R.string.camera),
+                                refresh = viewModel.shortcutRefresh,
+                                onClick = { viewModel.launchShortcut(context, "extra_right") },
+                                onLongClick = { handleSlotLongPress("extra_right") },
                             )
                         }
                     }
                 }
-            }
-            }
 
-            if (viewModel.prefs.homeExtraRow) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -331,122 +381,89 @@ fun HomeScreen(
                     Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
                         ShortcutItem(
                             viewModel = viewModel,
-                            slot = "extra_left",
-                            defaultLabel = stringResource(R.string.music),
+                            slot = "phone",
+                            defaultLabel = stringResource(R.string.phone),
                             refresh = viewModel.shortcutRefresh,
-                            onClick = { viewModel.launchShortcut(context, "extra_left") },
-                            onLongClick = { handleSlotLongPress("extra_left") },
+                            onClick = { viewModel.launchShortcut(context, "phone") },
+                            onLongClick = { handleSlotLongPress("phone") },
                         )
                     }
-                    Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                        ShortcutItem(
-                            viewModel = viewModel,
-                            slot = "extra_center",
-                            defaultLabel = stringResource(R.string.calendar),
-                            refresh = viewModel.shortcutRefresh,
-                            onClick = { viewModel.launchShortcut(context, "extra_center") },
-                            onLongClick = { handleSlotLongPress("extra_center") },
-                        )
-                    }
-                    Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                        ShortcutItem(
-                            viewModel = viewModel,
-                            slot = "extra_right",
-                            defaultLabel = stringResource(R.string.camera),
-                            refresh = viewModel.shortcutRefresh,
-                            onClick = { viewModel.launchShortcut(context, "extra_right") },
-                            onLongClick = { handleSlotLongPress("extra_right") },
-                        )
-                    }
-                }
-            }
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                    ShortcutItem(
-                        viewModel = viewModel,
-                        slot = "phone",
-                        defaultLabel = stringResource(R.string.phone),
-                        refresh = viewModel.shortcutRefresh,
-                        onClick = { viewModel.launchShortcut(context, "phone") },
-                        onLongClick = { handleSlotLongPress("phone") },
-                    )
-                }
-
-                Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                    if (viewModel.prefs.hideAllAppsButton) {
-                        ShortcutItem(
-                            viewModel = viewModel,
-                            slot = "center",
-                            defaultLabel = stringResource(R.string.contacts),
-                            refresh = viewModel.shortcutRefresh,
-                            onClick = { viewModel.launchShortcut(context, "center") },
-                            onLongClick = { handleSlotLongPress("center") },
-                        )
-                    } else {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.clickable { viewModel.navigateTo(Screen.ALL_APPS) },
-                        ) {
-                            val strokeWidth = 2.5.dp
-                            val isRounded = viewModel.roundedIcons
-                            val tileShape = if (isRounded) RoundedIconShape else CircleShape
-                            Box(
-                                modifier = Modifier
-                                    .size(LocalIconSize.current)
-                                    .then(
-                                        if (viewModel.prefs.homeIslands)
-                                            Modifier
-                                                .background(LocalSurface.current, tileShape)
-                                                .border(strokeWidth, LocalInk.current, tileShape)
-                                        else Modifier.dashedDotBorder(strokeWidth = strokeWidth, isRounded = isRounded, color = LocalInk.current)
-                                    ),
-                                contentAlignment = Alignment.Center,
+                    Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                        if (viewModel.prefs.hideAllAppsButton) {
+                            ShortcutItem(
+                                viewModel = viewModel,
+                                slot = "center",
+                                defaultLabel = stringResource(R.string.contacts),
+                                refresh = viewModel.shortcutRefresh,
+                                onClick = { viewModel.launchShortcut(context, "center") },
+                                onLongClick = { handleSlotLongPress("center") },
+                            )
+                        } else {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.clickable { viewModel.navigateTo(Screen.ALL_APPS) },
                             ) {
-                                Column(
-                                    verticalArrangement = Arrangement.spacedBy(6.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                val strokeWidth = 2.5.dp
+                                val isRounded = viewModel.roundedIcons
+                                val tileShape = if (isRounded) RoundedIconShape else CircleShape
+                                Box(
+                                    modifier = Modifier
+                                        .size(LocalIconSize.current)
+                                        .then(
+                                            if (viewModel.prefs.homeIslands) {
+                                                Modifier
+                                                    .background(LocalSurface.current, tileShape)
+                                                    .border(strokeWidth, LocalInk.current, tileShape)
+                                            } else {
+                                                Modifier.dashedDotBorder(
+                                                    strokeWidth = strokeWidth,
+                                                    isRounded = isRounded,
+                                                    color = LocalInk.current,
+                                                )
+                                            },
+                                        ),
+                                    contentAlignment = Alignment.Center,
                                 ) {
-                                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                                        CircleDot(12.dp, borderWidth = strokeWidth)
-                                        CircleDot(12.dp, borderWidth = strokeWidth)
-                                    }
-                                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                                        CircleDot(12.dp, borderWidth = strokeWidth)
-                                        CircleDot(12.dp, borderWidth = strokeWidth)
+                                    Column(
+                                        verticalArrangement = Arrangement.spacedBy(6.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                    ) {
+                                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                                            CircleDot(12.dp, borderWidth = strokeWidth)
+                                            CircleDot(12.dp, borderWidth = strokeWidth)
+                                        }
+                                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                                            CircleDot(12.dp, borderWidth = strokeWidth)
+                                            CircleDot(12.dp, borderWidth = strokeWidth)
+                                        }
                                     }
                                 }
-                            }
-                            if (!viewModel.prefs.hideAppNames) {
-                                Spacer(Modifier.height(4.dp))
-                                Text(
-                                    text = "",
-                                    fontSize = 18.sp,
-                                    fontFamily = LatoFamily,
-                                    color = LocalInk.current,
-                                )
+                                if (!viewModel.prefs.hideAppNames) {
+                                    Spacer(Modifier.height(4.dp))
+                                    Text(
+                                        text = "",
+                                        fontSize = 18.sp,
+                                        fontFamily = LatoFamily,
+                                        color = LocalInk.current,
+                                    )
+                                }
                             }
                         }
                     }
-                }
 
-                Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                    ShortcutItem(
-                        viewModel = viewModel,
-                        slot = "sms",
-                        defaultLabel = stringResource(R.string.sms),
-                        refresh = viewModel.shortcutRefresh,
-                        onClick = { viewModel.launchShortcut(context, "sms") },
-                        onLongClick = { handleSlotLongPress("sms") },
-                    )
+                    Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                        ShortcutItem(
+                            viewModel = viewModel,
+                            slot = "sms",
+                            defaultLabel = stringResource(R.string.sms),
+                            refresh = viewModel.shortcutRefresh,
+                            onClick = { viewModel.launchShortcut(context, "sms") },
+                            onLongClick = { handleSlotLongPress("sms") },
+                        )
+                    }
                 }
             }
-        }
         }
     }
 
@@ -572,8 +589,11 @@ private fun AppPickerDialog(
                         onDragStart = { dragAccumulator = 0f },
                         onDragEnd = {
                             if (kotlin.math.abs(dragAccumulator) > 80f) {
-                                if (dragAccumulator < 0 && page < totalPages - 1) page++
-                                else if (dragAccumulator > 0 && page > 0) page--
+                                if (dragAccumulator < 0 && page < totalPages - 1) {
+                                    page++
+                                } else if (dragAccumulator > 0 && page > 0) {
+                                    page--
+                                }
                             }
                         },
                         onHorizontalDrag = { _, amount -> dragAccumulator += amount },
@@ -636,9 +656,12 @@ private fun AppPickerDialog(
                                     .padding(horizontal = 2.dp)
                                     .size(6.dp)
                                     .then(
-                                        if (i == page) Modifier.background(LocalInk.current, CircleShape)
-                                        else Modifier.border(1.5.dp, LocalInk.current, CircleShape)
-                                    )
+                                        if (i == page) {
+                                            Modifier.background(LocalInk.current, CircleShape)
+                                        } else {
+                                            Modifier.border(1.5.dp, LocalInk.current, CircleShape)
+                                        },
+                                    ),
                             )
                         }
                     }
@@ -675,7 +698,9 @@ internal fun MusicWidget(
             info.controller.metadata?.getBitmap(android.media.MediaMetadata.METADATA_KEY_ALBUM_ART)
                 ?: info.controller.metadata?.getBitmap(android.media.MediaMetadata.METADATA_KEY_ART)
                 ?: info.controller.metadata?.getBitmap(android.media.MediaMetadata.METADATA_KEY_DISPLAY_ICON)
-        } catch (_: Exception) { null }
+        } catch (_: Exception) {
+            null
+        }
     }
 
     val noMediaLabel = stringResource(R.string.no_media)
@@ -714,7 +739,7 @@ internal fun MusicWidget(
             Modifier
                 .fillMaxWidth()
                 .height(2.5.dp)
-                .background(LocalInk.current)
+                .background(LocalInk.current),
         )
 
         Row(
@@ -828,8 +853,11 @@ private fun ShortcutItem(
     val sizePx = remember(iconSize, density) { with(density) { iconSize.roundToPx() } }
     val bitmap = rememberAppIcon(pkg ?: "", activityName, slotShortcutId ?: "", sizePx, refresh)
 
-    val notificationCount = if (viewModel.prefs.notificationIndicators && slotShortcutId == null)
-        pkg?.let { viewModel.notificationCounts[it] ?: 0 } ?: 0 else 0
+    val notificationCount = if (viewModel.prefs.notificationIndicators && slotShortcutId == null) {
+        pkg?.let { viewModel.notificationCounts[it] ?: 0 } ?: 0
+    } else {
+        0
+    }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -885,27 +913,31 @@ internal fun Modifier.homeIsland(
     vPad: Dp = 7.dp,
     bounds: (() -> Pair<Float, Float>)? = null,
 ): Modifier =
-    if (!show) this else drawBehind {
-        val px = hPad.toPx()
-        val py = vPad.toPx()
-        val radius = 19.dp.toPx()
-        val stroke = 2.5.dp.toPx()
-        val corner = CornerRadius(radius, radius)
-        val bias = (size.height * 0.05f)
-            .coerceAtMost(2.dp.toPx())
-            .coerceAtMost(py - 1.dp.toPx())
-            .coerceAtLeast(0f)
-        val b = bounds?.invoke()
-        val left = if (b != null && b.second > b.first) b.first.coerceIn(0f, size.width) else 0f
-        val right = if (b != null && b.second > b.first) b.second.coerceIn(0f, size.width) else size.width
-        val topLeft = Offset(left - px, -py + bias)
-        val rectSize = Size(right - left + px * 2, size.height + py * 2)
-        drawRoundRect(color = surface, topLeft = topLeft, size = rectSize, cornerRadius = corner)
-        drawRoundRect(
-            color = ink,
-            topLeft = Offset(topLeft.x + stroke / 2, topLeft.y + stroke / 2),
-            size = Size(rectSize.width - stroke, rectSize.height - stroke),
-            cornerRadius = CornerRadius(radius - stroke / 2, radius - stroke / 2),
-            style = Stroke(width = stroke),
-        )
+    if (!show) {
+        this
+    } else {
+        drawBehind {
+            val px = hPad.toPx()
+            val py = vPad.toPx()
+            val radius = 19.dp.toPx()
+            val stroke = 2.5.dp.toPx()
+            val corner = CornerRadius(radius, radius)
+            val bias = (size.height * 0.05f)
+                .coerceAtMost(2.dp.toPx())
+                .coerceAtMost(py - 1.dp.toPx())
+                .coerceAtLeast(0f)
+            val b = bounds?.invoke()
+            val left = if (b != null && b.second > b.first) b.first.coerceIn(0f, size.width) else 0f
+            val right = if (b != null && b.second > b.first) b.second.coerceIn(0f, size.width) else size.width
+            val topLeft = Offset(left - px, -py + bias)
+            val rectSize = Size(right - left + px * 2, size.height + py * 2)
+            drawRoundRect(color = surface, topLeft = topLeft, size = rectSize, cornerRadius = corner)
+            drawRoundRect(
+                color = ink,
+                topLeft = Offset(topLeft.x + stroke / 2, topLeft.y + stroke / 2),
+                size = Size(rectSize.width - stroke, rectSize.height - stroke),
+                cornerRadius = CornerRadius(radius - stroke / 2, radius - stroke / 2),
+                style = Stroke(width = stroke),
+            )
+        }
     }

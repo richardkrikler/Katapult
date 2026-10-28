@@ -3,6 +3,7 @@ package com.gezimos.katapult.ui
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -52,7 +53,6 @@ import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import android.content.pm.PackageManager
 import com.gezimos.katapult.MainViewModel
 import com.gezimos.katapult.R
 import com.gezimos.katapult.Screen
@@ -137,9 +137,11 @@ fun OnboardingScreen(viewModel: MainViewModel) {
                 try {
                     context.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
                 } catch (_: Exception) {
-                    context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                        data = Uri.fromParts("package", context.packageName, null)
-                    })
+                    context.startActivity(
+                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                            data = Uri.fromParts("package", context.packageName, null)
+                        },
+                    )
                 }
             },
         )
@@ -158,12 +160,13 @@ fun OnboardingScreen(viewModel: MainViewModel) {
                     context.startActivity(
                         Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                             data = Uri.fromParts("package", context.packageName, null)
-                        }
+                        },
                     )
-                } catch (_: Exception) {}
+                } catch (_: Exception) {
+                }
             }
             val callSmsLauncher = rememberLauncherForActivityResult(
-                ActivityResultContracts.RequestMultiplePermissions()
+                ActivityResultContracts.RequestMultiplePermissions(),
             ) { result ->
                 if (result.values.any { !it }) {
                     val activity = context as? Activity
@@ -178,8 +181,11 @@ fun OnboardingScreen(viewModel: MainViewModel) {
                 description = stringResource(R.string.call_sms_badges_desc),
                 checked = hasCallSmsPermission,
                 onCheckedChange = {
-                    if (hasCallSmsPermission) openAppSettings()
-                    else callSmsLauncher.launch(callSmsPermissions)
+                    if (hasCallSmsPermission) {
+                        openAppSettings()
+                    } else {
+                        callSmsLauncher.launch(callSmsPermissions)
+                    }
                 },
             )
         }
@@ -210,30 +216,33 @@ fun OnboardingScreen(viewModel: MainViewModel) {
             modifier = Modifier
                 .fillMaxWidth()
                 .then(
-                    if (allDone) Modifier
-                        .border(2.5.dp, ink, RoundedCornerShape(10.dp))
-                        .clickable {
-                            viewModel.prefs.onboardingComplete = true
-                            viewModel.prefs.notificationIndicators = true
-                            viewModel.navigateTo(Screen.HOME)
-                        }
-                    else Modifier
-                        .drawBehind {
-                            val stroke = 1.5.dp.toPx()
-                            val dash = 8.dp.toPx()
-                            val gap = 6.dp.toPx()
-                            val cr = 10.dp.toPx()
-                            drawRoundRect(
-                                color = ink,
-                                size = Size(size.width, size.height),
-                                cornerRadius = CornerRadius(cr, cr),
-                                style = Stroke(
-                                    width = stroke,
-                                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(dash, gap)),
-                                ),
-                            )
-                        }
-                        .clickable { showHighlight = true }
+                    if (allDone) {
+                        Modifier
+                            .border(2.5.dp, ink, RoundedCornerShape(10.dp))
+                            .clickable {
+                                viewModel.prefs.onboardingComplete = true
+                                viewModel.prefs.notificationIndicators = true
+                                viewModel.navigateTo(Screen.HOME)
+                            }
+                    } else {
+                        Modifier
+                            .drawBehind {
+                                val stroke = 1.5.dp.toPx()
+                                val dash = 8.dp.toPx()
+                                val gap = 6.dp.toPx()
+                                val cr = 10.dp.toPx()
+                                drawRoundRect(
+                                    color = ink,
+                                    size = Size(size.width, size.height),
+                                    cornerRadius = CornerRadius(cr, cr),
+                                    style = Stroke(
+                                        width = stroke,
+                                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(dash, gap)),
+                                    ),
+                                )
+                            }
+                            .clickable { showHighlight = true }
+                    },
                 )
                 .padding(vertical = 14.dp),
             contentAlignment = Alignment.Center,
@@ -246,6 +255,5 @@ fun OnboardingScreen(viewModel: MainViewModel) {
                 color = ink,
             )
         }
-
     }
 }

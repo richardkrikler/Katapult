@@ -7,48 +7,48 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.width
-import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
-import com.gezimos.katapult.util.IconUtility
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.drawscope.translate
-import kotlin.math.roundToInt
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gezimos.katapult.R
+import com.gezimos.katapult.util.IconUtility
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlin.math.roundToInt
 
 val LatoFamily = FontFamily(
     Font(R.font.lato_regular, FontWeight.Normal),
@@ -62,23 +62,57 @@ val ArrowSize = 40.dp
 val AllAppsRowHeight = 120.dp
 val AllAppsRowHeightNoLabels = 112.dp
 
-val EinkTintMatrix = ColorMatrix(floatArrayOf(
-    0f, 0f, 0f, 0f, 0f,
-    0f, 0f, 0f, 0f, 0f,
-    0f, 0f, 0f, 0f, 0f,
-    -0.2126f * 1.5f, -0.7152f * 1.5f, -0.0722f * 1.5f,
-    2f, 255f * 1.5f - 2f * 255f
-))
+val EinkTintMatrix = ColorMatrix(
+    floatArrayOf(
+        0f,
+        0f,
+        0f,
+        0f,
+        0f,
+        0f,
+        0f,
+        0f,
+        0f,
+        0f,
+        0f,
+        0f,
+        0f,
+        0f,
+        0f,
+        -0.2126f * 1.5f,
+        -0.7152f * 1.5f,
+        -0.0722f * 1.5f,
+        2f,
+        255f * 1.5f - 2f * 255f,
+    ),
+)
 val EinkColorFilter = ColorFilter.colorMatrix(EinkTintMatrix)
 
 // Same silhouette mask as EinkTintMatrix, but fills the glyph white instead of black (dark mode).
-val EinkTintMatrixDark = ColorMatrix(floatArrayOf(
-    0f, 0f, 0f, 0f, 255f,
-    0f, 0f, 0f, 0f, 255f,
-    0f, 0f, 0f, 0f, 255f,
-    -0.2126f * 1.5f, -0.7152f * 1.5f, -0.0722f * 1.5f,
-    2f, 255f * 1.5f - 2f * 255f
-))
+val EinkTintMatrixDark = ColorMatrix(
+    floatArrayOf(
+        0f,
+        0f,
+        0f,
+        0f,
+        255f,
+        0f,
+        0f,
+        0f,
+        0f,
+        255f,
+        0f,
+        0f,
+        0f,
+        0f,
+        255f,
+        -0.2126f * 1.5f,
+        -0.7152f * 1.5f,
+        -0.0722f * 1.5f,
+        2f,
+        255f * 1.5f - 2f * 255f,
+    ),
+)
 val EinkColorFilterDark = ColorFilter.colorMatrix(EinkTintMatrixDark)
 
 // Theme: Ink = foreground, Surface = background. Inverted in dark mode. Provided in App.kt.
@@ -87,10 +121,11 @@ val LocalSurface = staticCompositionLocalOf { Color.White }
 val LocalIconFilter = staticCompositionLocalOf { EinkColorFilter }
 
 val NoIndication = object : androidx.compose.foundation.IndicationNodeFactory {
-    override fun create(interactionSource: androidx.compose.foundation.interaction.InteractionSource): androidx.compose.ui.Modifier.Node {
-        return object : androidx.compose.ui.Modifier.Node() {}
-    }
+    override fun create(interactionSource: androidx.compose.foundation.interaction.InteractionSource): androidx.compose.ui.Modifier.Node =
+        object : androidx.compose.ui.Modifier.Node() {}
+
     override fun hashCode() = 0
+
     override fun equals(other: Any?) = other === this
 }
 
@@ -98,77 +133,88 @@ val RoundedIconShape = RoundedCornerShape(19.dp)
 val RoundedSmallShape = RoundedCornerShape(10.dp)
 val RoundedBadgeShape = RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp, bottomEnd = 0.dp, bottomStart = 8.dp)
 
-fun Modifier.dashedDotBorder(strokeWidth: Dp = 2.dp, isRounded: Boolean, outset: Dp = 0.dp, cornerRadius: Dp = 19.dp, color: Color = Color.Black): Modifier = this.drawBehind {
-    val sw = strokeWidth.toPx()
-    val out = outset.toPx()
-    val dotRadius = sw * 0.7f
-    val targetSpacing = sw * 5f
-    val drawWidth = size.width + 2 * out
-    val drawHeight = size.height + 2 * out
+fun Modifier.dashedDotBorder(
+    strokeWidth: Dp = 2.dp,
+    isRounded: Boolean,
+    outset: Dp = 0.dp,
+    cornerRadius: Dp = 19.dp,
+    color: Color = Color.Black,
+): Modifier =
+    this.drawBehind {
+        val sw = strokeWidth.toPx()
+        val out = outset.toPx()
+        val dotRadius = sw * 0.7f
+        val targetSpacing = sw * 5f
+        val drawWidth = size.width + 2 * out
+        val drawHeight = size.height + 2 * out
 
-    if (isRounded) {
-        val r = cornerRadius.toPx() + out
-        val w = drawWidth - sw
-        val h = drawHeight - sw
-        val cr = r.coerceAtMost(w / 2).coerceAtMost(h / 2)
-        val straightH = w - 2 * cr
-        val straightV = h - 2 * cr
-        val cornerArc = (Math.PI * cr / 2).toFloat()
-        val perimeter = 2 * straightH + 2 * straightV + 4 * cornerArc
-        val dotCount = kotlin.math.round(perimeter / targetSpacing).toInt().coerceAtLeast(1)
-        val spacing = perimeter / dotCount
+        if (isRounded) {
+            val r = cornerRadius.toPx() + out
+            val w = drawWidth - sw
+            val h = drawHeight - sw
+            val cr = r.coerceAtMost(w / 2).coerceAtMost(h / 2)
+            val straightH = w - 2 * cr
+            val straightV = h - 2 * cr
+            val cornerArc = (Math.PI * cr / 2).toFloat()
+            val perimeter = 2 * straightH + 2 * straightV + 4 * cornerArc
+            val dotCount = kotlin.math.round(perimeter / targetSpacing).toInt().coerceAtLeast(1)
+            val spacing = perimeter / dotCount
 
-        data class Segment(val length: Float, val point: (Float) -> Offset)
-        val left = -out + sw / 2
-        val top = -out + sw / 2
-        val right = size.width + out - sw / 2
-        val bottom = size.height + out - sw / 2
-        val segments = listOf(
-            Segment(straightH) { t -> Offset(left + cr + t, top) },
-            Segment(cornerArc) { t ->
-                val a = t / cr
-                Offset(right - cr + cr * kotlin.math.sin(a), top + cr - cr * kotlin.math.cos(a))
-            },
-            Segment(straightV) { t -> Offset(right, top + cr + t) },
-            Segment(cornerArc) { t ->
-                val a = t / cr
-                Offset(right - cr + cr * kotlin.math.cos(a), bottom - cr + cr * kotlin.math.sin(a))
-            },
-            Segment(straightH) { t -> Offset(right - cr - t, bottom) },
-            Segment(cornerArc) { t ->
-                val a = t / cr
-                Offset(left + cr - cr * kotlin.math.sin(a), bottom - cr + cr * kotlin.math.cos(a))
-            },
-            Segment(straightV) { t -> Offset(left, bottom - cr - t) },
-            Segment(cornerArc) { t ->
-                val a = t / cr
-                Offset(left + cr - cr * kotlin.math.cos(a), top + cr - cr * kotlin.math.sin(a))
-            },
-        )
-        for (i in 0 until dotCount) {
-            var dist = i * spacing
-            for (seg in segments) {
-                if (dist <= seg.length) {
-                    drawCircle(color, dotRadius, seg.point(dist))
-                    break
+            data class Segment(
+                val length: Float,
+                val point: (Float) -> Offset,
+            )
+            val left = -out + sw / 2
+            val top = -out + sw / 2
+            val right = size.width + out - sw / 2
+            val bottom = size.height + out - sw / 2
+            val segments = listOf(
+                Segment(straightH) { t -> Offset(left + cr + t, top) },
+                Segment(cornerArc) { t ->
+                    val a = t / cr
+                    Offset(right - cr + cr * kotlin.math.sin(a), top + cr - cr * kotlin.math.cos(a))
+                },
+                Segment(straightV) { t -> Offset(right, top + cr + t) },
+                Segment(cornerArc) { t ->
+                    val a = t / cr
+                    Offset(right - cr + cr * kotlin.math.cos(a), bottom - cr + cr * kotlin.math.sin(a))
+                },
+                Segment(straightH) { t -> Offset(right - cr - t, bottom) },
+                Segment(cornerArc) { t ->
+                    val a = t / cr
+                    Offset(left + cr - cr * kotlin.math.sin(a), bottom - cr + cr * kotlin.math.cos(a))
+                },
+                Segment(straightV) { t -> Offset(left, bottom - cr - t) },
+                Segment(cornerArc) { t ->
+                    val a = t / cr
+                    Offset(left + cr - cr * kotlin.math.cos(a), top + cr - cr * kotlin.math.sin(a))
+                },
+            )
+            for (i in 0 until dotCount) {
+                var dist = i * spacing
+                for (seg in segments) {
+                    if (dist <= seg.length) {
+                        drawCircle(color, dotRadius, seg.point(dist))
+                        break
+                    }
+                    dist -= seg.length
                 }
-                dist -= seg.length
+            }
+        } else {
+            val perimeter = (Math.PI * drawWidth).toFloat()
+            val dotCount = kotlin.math.round(perimeter / targetSpacing).toInt().coerceAtLeast(1)
+            val cx = size.width / 2
+            val cy = size.height / 2
+            val radius = drawWidth / 2 - sw / 2
+            for (i in 0 until dotCount) {
+                val angle = (2.0 * Math.PI * i / dotCount).toFloat()
+                val x = cx + radius * kotlin.math.cos(angle)
+                val y = cy + radius * kotlin.math.sin(angle)
+                drawCircle(color, dotRadius, Offset(x, y))
             }
         }
-    } else {
-        val perimeter = (Math.PI * drawWidth).toFloat()
-        val dotCount = kotlin.math.round(perimeter / targetSpacing).toInt().coerceAtLeast(1)
-        val cx = size.width / 2
-        val cy = size.height / 2
-        val radius = drawWidth / 2 - sw / 2
-        for (i in 0 until dotCount) {
-            val angle = (2.0 * Math.PI * i / dotCount).toFloat()
-            val x = cx + radius * kotlin.math.cos(angle)
-            val y = cy + radius * kotlin.math.sin(angle)
-            drawCircle(color, dotRadius, Offset(x, y))
-        }
     }
-}
+
 val LocalIconShape = compositionLocalOf<Shape> { CircleShape }
 val LocalSmallIconShape = compositionLocalOf<Shape> { CircleShape }
 val LocalSheetDismissSignal = compositionLocalOf { 0 }
@@ -203,7 +249,12 @@ fun rememberAppIcon(
 }
 
 @Composable
-fun AppIconCircle(bitmap: Bitmap?, size: Dp, borderWidth: Dp = 2.5.dp, shape: Shape = LocalIconShape.current) {
+fun AppIconCircle(
+    bitmap: Bitmap?,
+    size: Dp,
+    borderWidth: Dp = 2.5.dp,
+    shape: Shape = LocalIconShape.current,
+) {
     val image = remember(bitmap) { bitmap?.asImageBitmap() }
     val filter = LocalIconFilter.current
     Box(
@@ -227,7 +278,10 @@ fun AppIconCircle(bitmap: Bitmap?, size: Dp, borderWidth: Dp = 2.5.dp, shape: Sh
 private val arrowImages = HashMap<Int, ImageBitmap>()
 
 @Composable
-fun ArrowButton(iconRes: Int, onClick: () -> Unit) {
+fun ArrowButton(
+    iconRes: Int,
+    onClick: () -> Unit,
+) {
     val shape = LocalSmallIconShape.current
     val ink = LocalInk.current
     val context = LocalContext.current
@@ -258,19 +312,25 @@ fun ArrowButton(iconRes: Int, onClick: () -> Unit) {
 }
 
 @Composable
-fun CircleDot(size: Dp, borderWidth: Dp = 1.5.dp) {
+fun CircleDot(
+    size: Dp,
+    borderWidth: Dp = 1.5.dp,
+) {
     val shape = LocalIconShape.current
     Box(
         Modifier
             .size(size)
-            .border(borderWidth, LocalInk.current, shape)
+            .border(borderWidth, LocalInk.current, shape),
     )
 }
 
 val LocalBadgeShape = compositionLocalOf<Shape> { CircleShape }
 
 @Composable
-fun NotificationBadge(count: Int, modifier: Modifier = Modifier) {
+fun NotificationBadge(
+    count: Int,
+    modifier: Modifier = Modifier,
+) {
     val shape = LocalBadgeShape.current
     Box(
         modifier = modifier

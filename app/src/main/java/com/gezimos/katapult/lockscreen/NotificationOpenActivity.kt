@@ -20,12 +20,15 @@ import com.gezimos.katapult.service.NotificationListener
  * Falls back to the app's launch intent when the notification is gone or has no intent.
  */
 class NotificationOpenActivity : Activity() {
-
     companion object {
         private const val EXTRA_PACKAGE = "package"
         private const val EXTRA_KEY = "key"
 
-        fun intent(context: Context, packageName: String, key: String?): Intent =
+        fun intent(
+            context: Context,
+            packageName: String,
+            key: String?,
+        ): Intent =
             Intent(context, NotificationOpenActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION)
                 .putExtra(EXTRA_PACKAGE, packageName)
@@ -51,11 +54,16 @@ class NotificationOpenActivity : Activity() {
             open()
             return
         }
-        keyguard.requestDismissKeyguard(this, object : KeyguardManager.KeyguardDismissCallback() {
-            override fun onDismissSucceeded() = open()
-            override fun onDismissCancelled() = close()
-            override fun onDismissError() = close()
-        })
+        keyguard.requestDismissKeyguard(
+            this,
+            object : KeyguardManager.KeyguardDismissCallback() {
+                override fun onDismissSucceeded() = open()
+
+                override fun onDismissCancelled() = close()
+
+                override fun onDismissError() = close()
+            },
+        )
     }
 
     private fun open() {
@@ -78,7 +86,10 @@ class NotificationOpenActivity : Activity() {
                 packageManager.getLaunchIntentForPackage(packageName)
             }
             fallback?.let {
-                try { startActivity(it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) } catch (_: Exception) {}
+                try {
+                    startActivity(it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                } catch (_: Exception) {
+                }
             }
         }
         close()

@@ -163,7 +163,9 @@ fun ColumnScope.ClockDisplay(
                         onClick = { onClockClick?.invoke() },
                         onLongClick = onClockLongClick,
                     )
-                } else Modifier,
+                } else {
+                    Modifier
+                },
             ),
     ) {
         Text(
@@ -198,13 +200,18 @@ fun ColumnScope.ClockDisplay(
                         onClick = { onDateClick?.invoke() },
                         onLongClick = onDateLongClick,
                     )
-                } else Modifier,
+                } else {
+                    Modifier
+                },
             ),
     )
 }
 
 @Composable
-private fun weatherIcon(conditionId: Int, iconInfo: String?): ImageVector {
+private fun weatherIcon(
+    conditionId: Int,
+    iconInfo: String?,
+): ImageVector {
     val day = iconInfo == null || iconInfo.endsWith("d")
     val res = when (conditionId) {
         in 200..232 -> R.drawable.ic_weather_thunderstorm
@@ -217,8 +224,11 @@ private fun weatherIcon(conditionId: Int, iconInfo: String?): ImageVector {
         800, 801 ->
             if (day) R.drawable.ic_weather_clear_day else R.drawable.ic_weather_clear_night
         802, 803 ->
-            if (day) R.drawable.ic_weather_partly_cloudy_day
-            else R.drawable.ic_weather_partly_cloudy_night
+            if (day) {
+                R.drawable.ic_weather_partly_cloudy_day
+            } else {
+                R.drawable.ic_weather_partly_cloudy_night
+            }
         else -> R.drawable.ic_weather_cloudy
     }
     return ImageVector.vectorResource(res)

@@ -8,9 +8,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import com.gezimos.katapult.R
 import androidx.compose.ui.unit.dp
 import com.gezimos.katapult.MainViewModel
+import com.gezimos.katapult.R
 import com.gezimos.katapult.Screen
 
 @Composable
@@ -50,7 +50,9 @@ fun App(
             val message = stringResource(R.string.icon_import_failed)
             LaunchedEffect(Unit) {
                 android.widget.Toast.makeText(
-                    context, message, android.widget.Toast.LENGTH_LONG,
+                    context,
+                    message,
+                    android.widget.Toast.LENGTH_LONG,
                 ).show()
                 viewModel.iconImportError = false
             }

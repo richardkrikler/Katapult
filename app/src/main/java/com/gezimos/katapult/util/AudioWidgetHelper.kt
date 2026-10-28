@@ -14,8 +14,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 @SuppressLint("StaticFieldLeak")
-class AudioWidgetHelper private constructor(private val context: Context) {
-
+class AudioWidgetHelper private constructor(
+    private val context: Context,
+) {
     data class MediaInfo(
         val packageName: String,
         val isPlaying: Boolean,
@@ -39,13 +40,12 @@ class AudioWidgetHelper private constructor(private val context: Context) {
 
     companion object {
         @Volatile
-        private var INSTANCE: AudioWidgetHelper? = null
+        private var instance: AudioWidgetHelper? = null
 
-        fun getInstance(context: Context): AudioWidgetHelper {
-            return INSTANCE ?: synchronized(this) {
-                INSTANCE ?: AudioWidgetHelper(context.applicationContext).also { INSTANCE = it }
+        fun getInstance(context: Context): AudioWidgetHelper =
+            instance ?: synchronized(this) {
+                instance ?: AudioWidgetHelper(context.applicationContext).also { instance = it }
             }
-        }
     }
 
     fun initialize(componentName: ComponentName) {
@@ -54,17 +54,26 @@ class AudioWidgetHelper private constructor(private val context: Context) {
 
         if (activeSessionsListener == null || initializedFor != componentName) {
             activeSessionsListener?.let { old ->
-                try { manager.removeOnActiveSessionsChangedListener(old) } catch (_: Exception) {}
+                try {
+                    manager.removeOnActiveSessionsChangedListener(old)
+                } catch (_: Exception) {
+                }
             }
             val listener = MediaSessionManager.OnActiveSessionsChangedListener { controllers ->
                 handleSessionsChanged(controllers)
             }
             activeSessionsListener = listener
             initializedFor = componentName
-            try { manager.addOnActiveSessionsChangedListener(listener, componentName) } catch (_: Exception) {}
+            try {
+                manager.addOnActiveSessionsChangedListener(listener, componentName)
+            } catch (_: Exception) {
+            }
         }
 
-        try { handleSessionsChanged(manager.getActiveSessions(componentName)) } catch (_: Exception) {}
+        try {
+            handleSessionsChanged(manager.getActiveSessions(componentName))
+        } catch (_: Exception) {
+        }
     }
 
     fun cleanup() {
@@ -90,7 +99,9 @@ class AudioWidgetHelper private constructor(private val context: Context) {
             if (userDismissed &&
                 active.packageName == dismissedPackageName &&
                 active.playbackState?.state != PlaybackState.STATE_PLAYING
-            ) return
+            ) {
+                return
+            }
 
             if (active.playbackState?.state == PlaybackState.STATE_PLAYING) {
                 userDismissed = false
@@ -114,29 +125,40 @@ class AudioWidgetHelper private constructor(private val context: Context) {
 
         val callback = object : MediaController.Callback() {
             override fun onMetadataChanged(metadata: MediaMetadata?) = updateState(controller)
+
             override fun onPlaybackStateChanged(state: PlaybackState?) {
                 if (state?.state == PlaybackState.STATE_PLAYING) {
                     userDismissed = false
                     dismissedPackageName = null
                 }
-                if (state?.state == PlaybackState.STATE_STOPPED) _state.value = null
-                else updateState(controller)
+                if (state?.state == PlaybackState.STATE_STOPPED) {
+                    _state.value = null
+                } else {
+                    updateState(controller)
+                }
             }
-            override fun onSessionDestroyed() { _state.value = null }
+
+            override fun onSessionDestroyed() {
+                _state.value = null
+            }
         }
 
         try {
             controller.registerCallback(callback)
             currentController = controller
             currentCallback = callback
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
     }
 
     private fun watchAll(controllers: List<MediaController>) {
         val tokens = controllers.map { it.sessionToken }.toSet()
         watchers.keys.filter { it !in tokens }.forEach { token ->
             watchers.remove(token)?.let { (c, cb) ->
-                try { c.unregisterCallback(cb) } catch (_: Exception) {}
+                try {
+                    c.unregisterCallback(cb)
+                } catch (_: Exception) {
+                }
             }
         }
         controllers.forEach { controller ->
@@ -147,19 +169,25 @@ class AudioWidgetHelper private constructor(private val context: Context) {
                     val s = state?.state
                     if ((s == PlaybackState.STATE_PLAYING || s == PlaybackState.STATE_PAUSED) &&
                         currentController?.sessionToken != token
-                    ) handleSessionsChanged(lastControllers)
+                    ) {
+                        handleSessionsChanged(lastControllers)
+                    }
                 }
             }
             try {
                 controller.registerCallback(callback)
                 watchers[token] = controller to callback
-            } catch (_: Exception) {}
+            } catch (_: Exception) {
+            }
         }
     }
 
     private fun unwatchAll() {
         watchers.values.forEach { (c, cb) ->
-            try { c.unregisterCallback(cb) } catch (_: Exception) {}
+            try {
+                c.unregisterCallback(cb)
+            } catch (_: Exception) {
+            }
         }
         watchers.clear()
         lastControllers = emptyList()
@@ -167,7 +195,10 @@ class AudioWidgetHelper private constructor(private val context: Context) {
 
     private fun unregisterCallback() {
         currentCallback?.let { cb ->
-            try { currentController?.unregisterCallback(cb) } catch (_: Exception) {}
+            try {
+                currentController?.unregisterCallback(cb)
+            } catch (_: Exception) {
+            }
         }
         currentCallback = null
         currentController = null
@@ -186,7 +217,10 @@ class AudioWidgetHelper private constructor(private val context: Context) {
         )
     }
 
-    private fun sendKey(controller: MediaController, keyCode: Int) {
+    private fun sendKey(
+        controller: MediaController,
+        keyCode: Int,
+    ) {
         val sent = controller.dispatchMediaButtonEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode)) &&
             controller.dispatchMediaButtonEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode))
         if (!sent) {
@@ -204,22 +238,35 @@ class AudioWidgetHelper private constructor(private val context: Context) {
     fun playPause(): Boolean {
         val controller = _state.value?.controller ?: return false
         return try {
-            if (controller.playbackState?.state == PlaybackState.STATE_PLAYING)
+            if (controller.playbackState?.state == PlaybackState.STATE_PLAYING) {
                 sendKey(controller, KeyEvent.KEYCODE_MEDIA_PAUSE)
-            else
+            } else {
                 sendKey(controller, KeyEvent.KEYCODE_MEDIA_PLAY)
+            }
             true
-        } catch (_: Exception) { false }
+        } catch (_: Exception) {
+            false
+        }
     }
 
     fun skipNext(): Boolean {
         val controller = _state.value?.controller ?: return false
-        return try { sendKey(controller, KeyEvent.KEYCODE_MEDIA_NEXT); true } catch (_: Exception) { false }
+        return try {
+            sendKey(controller, KeyEvent.KEYCODE_MEDIA_NEXT)
+            true
+        } catch (_: Exception) {
+            false
+        }
     }
 
     fun skipPrevious(): Boolean {
         val controller = _state.value?.controller ?: return false
-        return try { sendKey(controller, KeyEvent.KEYCODE_MEDIA_PREVIOUS); true } catch (_: Exception) { false }
+        return try {
+            sendKey(controller, KeyEvent.KEYCODE_MEDIA_PREVIOUS)
+            true
+        } catch (_: Exception) {
+            false
+        }
     }
 
     fun stop(): Boolean {
@@ -229,7 +276,10 @@ class AudioWidgetHelper private constructor(private val context: Context) {
             sendKey(controller, KeyEvent.KEYCODE_MEDIA_STOP)
             dismiss()
             true
-        } catch (_: Exception) { dismiss(); false }
+        } catch (_: Exception) {
+            dismiss()
+            false
+        }
     }
 
     fun openApp(): Boolean {
@@ -241,7 +291,9 @@ class AudioWidgetHelper private constructor(private val context: Context) {
                 context.startActivity(it)
                 true
             } ?: false
-        } catch (_: Exception) { false }
+        } catch (_: Exception) {
+            false
+        }
     }
 
     fun dismiss() {
@@ -256,6 +308,7 @@ class AudioWidgetHelper private constructor(private val context: Context) {
             val componentName = ComponentName(context, com.gezimos.katapult.service.NotificationListener::class.java)
             val controllers = manager.getActiveSessions(componentName)
             handleSessionsChanged(controllers)
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
     }
 }

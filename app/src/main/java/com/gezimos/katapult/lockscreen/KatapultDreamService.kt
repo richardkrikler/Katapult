@@ -29,7 +29,6 @@ class KatapultDreamService :
     LifecycleOwner,
     ViewModelStoreOwner,
     SavedStateRegistryOwner {
-
     companion object {
         /** True while the dream is showing, so the lockscreen widget hides and isn't doubled. */
         @Volatile

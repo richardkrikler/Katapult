@@ -11,7 +11,6 @@ import android.provider.Settings
  * (NotificationLockscreenUserManagerImpl) through public APIs only.
  */
 object LockscreenPrivacy {
-
     enum class Visibility { SHOW, REDACT, HIDE }
 
     /** NotificationChannel.lockscreenVisibility when the user hasn't changed it (hidden NotificationManager.VISIBILITY_NO_OVERRIDE). */
@@ -31,12 +30,14 @@ object LockscreenPrivacy {
     /** Read fresh on each use: the user may change these while the widget is up. */
     fun read(context: Context): DeviceState {
         val resolver = context.contentResolver
+
         // A setting that can't be read counts as its restrictive value.
-        fun secureFlag(name: String) = try {
-            Settings.Secure.getInt(resolver, name, 1) != 0
-        } catch (_: Exception) {
-            false
-        }
+        fun secureFlag(name: String) =
+            try {
+                Settings.Secure.getInt(resolver, name, 1) != 0
+            } catch (_: Exception) {
+                false
+            }
         return DeviceState(
             keyguardSecure = try {
                 context.getSystemService(KeyguardManager::class.java).isKeyguardSecure
@@ -57,13 +58,19 @@ object LockscreenPrivacy {
      * [notificationVisibility] is Notification.visibility; [channelOverride] is the user's
      * per-channel choice from the ranking ([NO_OVERRIDE] if none).
      */
-    fun decide(device: DeviceState, notificationVisibility: Int, channelOverride: Int): Visibility {
+    fun decide(
+        device: DeviceState,
+        notificationVisibility: Int,
+        channelOverride: Int,
+    ): Visibility {
         // A swipe-only lock screen protects nothing, so stock shows everything. (With no
         // PIN, MuditaOS has no lock screen at all and the widget never shows.)
         if (!device.keyguardSecure) return Visibility.SHOW
         if (!device.showOnLockscreen ||
             device.keyguardDisabledFeatures and DevicePolicyManager.KEYGUARD_DISABLE_SECURE_NOTIFICATIONS != 0
-        ) return Visibility.HIDE
+        ) {
+            return Visibility.HIDE
+        }
         val overridden = channelOverride != NO_OVERRIDE
         val visibility = if (overridden) channelOverride else notificationVisibility
         return when {

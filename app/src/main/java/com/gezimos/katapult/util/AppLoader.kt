@@ -9,7 +9,6 @@ import com.gezimos.katapult.R
 import com.gezimos.katapult.model.AppModel
 
 object AppLoader {
-
     private var blacklist: Set<String>? = null
 
     @Volatile
@@ -18,7 +17,10 @@ object AppLoader {
     private var receiverRegistered = false
 
     private val invalidator = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
+        override fun onReceive(
+            context: Context,
+            intent: Intent,
+        ) {
             cached = null
             UsageHelper.invalidate()
             intent.data?.schemeSpecificPart?.let { IconUtility.clearCacheFor(it) }
@@ -61,7 +63,8 @@ object AppLoader {
                     parser.getAttributeValue(null, "packageName")?.let { packages.add(it) }
                 }
             }
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
         blacklist = packages
         return packages
     }
@@ -77,7 +80,7 @@ object AppLoader {
                 AppModel(
                     packageName = ri.activityInfo.packageName,
                     label = ri.loadLabel(pm).toString(),
-                    activityName = ri.activityInfo.name
+                    activityName = ri.activityInfo.name,
                 )
             }
             .sortedBy { it.label.lowercase() }
@@ -85,7 +88,10 @@ object AppLoader {
         return apps
     }
 
-    fun loadApps(context: Context, showSelf: Boolean = false): List<AppModel> {
+    fun loadApps(
+        context: Context,
+        showSelf: Boolean = false,
+    ): List<AppModel> {
         ensureReceiver(context)
         val selfPackage = context.packageName
         val blocked = getBlacklist(context)

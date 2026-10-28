@@ -12,8 +12,9 @@ import android.provider.Telephony
 import androidx.core.content.ContextCompat
 import java.util.concurrent.CopyOnWriteArrayList
 
-class DirectBadgeHelper private constructor(private val context: Context) {
-
+class DirectBadgeHelper private constructor(
+    private val context: Context,
+) {
     companion object {
         const val MUDITA_DIAL = "com.mudita.dial"
         const val MUDITA_MESSAGES = "com.mudita.messages"
@@ -33,13 +34,12 @@ class DirectBadgeHelper private constructor(private val context: Context) {
         private const val DEBOUNCE_MS = 300L
 
         @Volatile
-        private var INSTANCE: DirectBadgeHelper? = null
+        private var instance: DirectBadgeHelper? = null
 
-        fun getInstance(context: Context): DirectBadgeHelper {
-            return INSTANCE ?: synchronized(this) {
-                INSTANCE ?: DirectBadgeHelper(context.applicationContext).also { INSTANCE = it }
+        fun getInstance(context: Context): DirectBadgeHelper =
+            instance ?: synchronized(this) {
+                instance ?: DirectBadgeHelper(context.applicationContext).also { instance = it }
             }
-        }
     }
 
     private val listeners = CopyOnWriteArrayList<() -> Unit>()
@@ -101,7 +101,8 @@ class DirectBadgeHelper private constructor(private val context: Context) {
                 MISSED_SELECTION,
                 MISSED_ARGS,
             )
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
         queryMissedCalls()
     }
 
@@ -143,7 +144,9 @@ class DirectBadgeHelper private constructor(private val context: Context) {
             val c = cursor?.count ?: 0
             cursor?.close()
             c
-        } catch (_: Exception) { 0 }
+        } catch (_: Exception) {
+            0
+        }
 
         if (count != missedCallCount) {
             missedCallCount = count
@@ -163,7 +166,9 @@ class DirectBadgeHelper private constructor(private val context: Context) {
             val c = cursor?.count ?: 0
             cursor?.close()
             c
-        } catch (_: Exception) { 0 }
+        } catch (_: Exception) {
+            0
+        }
 
         val mmsCount = try {
             val cursor = context.contentResolver.query(
@@ -176,7 +181,9 @@ class DirectBadgeHelper private constructor(private val context: Context) {
             val c = cursor?.count ?: 0
             cursor?.close()
             c
-        } catch (_: Exception) { 0 }
+        } catch (_: Exception) {
+            0
+        }
 
         val total = smsCount + mmsCount
         if (total != unreadSmsCount) {
@@ -199,7 +206,9 @@ class DirectBadgeHelper private constructor(private val context: Context) {
             callLogHandler = handler
             callLogObserver = observer
             context.contentResolver.registerContentObserver(
-                CallLog.Calls.CONTENT_URI, true, observer,
+                CallLog.Calls.CONTENT_URI,
+                true,
+                observer,
             )
         }
 
@@ -216,7 +225,9 @@ class DirectBadgeHelper private constructor(private val context: Context) {
             smsHandler = handler
             smsObserver = observer
             context.contentResolver.registerContentObserver(
-                Telephony.MmsSms.CONTENT_URI, true, observer,
+                Telephony.MmsSms.CONTENT_URI,
+                true,
+                observer,
             )
         }
     }

@@ -5,7 +5,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class UpdateCheckerTest {
-
     @Test
     fun isNewer_ordersForkVersions() {
         val cases = listOf(

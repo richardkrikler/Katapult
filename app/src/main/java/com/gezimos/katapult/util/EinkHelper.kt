@@ -13,8 +13,9 @@ import androidx.lifecycle.LifecycleOwner
  *
  * Credit: UndefinedProgrammer — https://github.com/UndefinedProgrammer/InkMaster
  */
-class EinkHelper(private val packageName: String) : DefaultLifecycleObserver {
-
+class EinkHelper(
+    private val packageName: String,
+) : DefaultLifecycleObserver {
     private var meinkService: IBinder? = null
     private var currentMeinkMode: Int = MEINK_MODE_DISABLED
 
@@ -29,19 +30,21 @@ class EinkHelper(private val packageName: String) : DefaultLifecycleObserver {
         const val MEINK_MODE_CLEAR = 3
         const val MEINK_MODE_READING = 4
 
-        fun modeName(mode: Int): String = when (mode) {
-            MEINK_MODE_CLEAR -> "Clear"
-            MEINK_MODE_CONTRAST -> "Contrast"
-            MEINK_MODE_READING -> "Reading"
-            else -> "Disabled"
-        }
+        fun modeName(mode: Int): String =
+            when (mode) {
+                MEINK_MODE_CLEAR -> "Clear"
+                MEINK_MODE_CONTRAST -> "Contrast"
+                MEINK_MODE_READING -> "Reading"
+                else -> "Disabled"
+            }
 
-        fun nextMode(current: Int): Int = when (current) {
-            MEINK_MODE_DISABLED -> MEINK_MODE_CLEAR
-            MEINK_MODE_CLEAR -> MEINK_MODE_CONTRAST
-            MEINK_MODE_CONTRAST -> MEINK_MODE_READING
-            else -> MEINK_MODE_DISABLED
-        }
+        fun nextMode(current: Int): Int =
+            when (current) {
+                MEINK_MODE_DISABLED -> MEINK_MODE_CLEAR
+                MEINK_MODE_CLEAR -> MEINK_MODE_CONTRAST
+                MEINK_MODE_CONTRAST -> MEINK_MODE_READING
+                else -> MEINK_MODE_DISABLED
+            }
     }
 
     @SuppressLint("PrivateApi")

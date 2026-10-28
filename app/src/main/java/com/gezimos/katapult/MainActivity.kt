@@ -16,7 +16,6 @@ import com.gezimos.katapult.util.EinkHelper
 import com.gezimos.katapult.util.EinkRefreshHelper
 
 class MainActivity : ComponentActivity() {
-
     val viewModel: MainViewModel by viewModels()
 
     private var einkHelper: EinkHelper? = null
@@ -26,8 +25,11 @@ class MainActivity : ComponentActivity() {
     }
 
     val iconPicker = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        if (uri != null) viewModel.saveImportedIcon(this, uri)
-        else viewModel.cancelIconImport()
+        if (uri != null) {
+            viewModel.saveImportedIcon(this, uri)
+        } else {
+            viewModel.cancelIconImport()
+        }
     }
 
     private val backCallback = object : OnBackPressedCallback(true) {

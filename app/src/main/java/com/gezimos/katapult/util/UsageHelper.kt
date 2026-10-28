@@ -11,7 +11,6 @@ import android.os.SystemClock
 import android.provider.Settings
 
 object UsageHelper {
-
     private const val TTL_MS = 60_000L
     private const val WINDOW_MS = 30L * 24 * 60 * 60 * 1000
 
@@ -38,7 +37,8 @@ object UsageHelper {
     fun openSettings(context: Context) {
         try {
             context.startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
     }
 
     fun invalidate() {
@@ -59,7 +59,8 @@ object UsageHelper {
             pm.resolveActivity(Intent(Settings.ACTION_SETTINGS), 0)?.let {
                 ignored.add(it.activityInfo.packageName)
             }
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
         ignoredCache = ignored
         ignoredAt = now
         return ignored

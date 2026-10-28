@@ -10,9 +10,7 @@ import com.gezimos.katapult.util.DeviceHelper
 import java.util.concurrent.ConcurrentHashMap
 
 class NotificationListener : NotificationListenerService() {
-
     companion object {
-
         private val keysByPkg = ConcurrentHashMap<String, MutableSet<String>>()
 
         private val clearedKeys = ConcurrentHashMap<String, MutableSet<String>>()
@@ -21,6 +19,7 @@ class NotificationListener : NotificationListenerService() {
         private val lastPostByPkg = ConcurrentHashMap<String, Long>()
 
         var onCountsChanged: (() -> Unit)? = null
+
         // Extra slots for the experimental lockscreen widget and screensaver (see .lockscreen package).
         var onCountsChangedExtra: (() -> Unit)? = null
         var onCountsChangedDream: (() -> Unit)? = null
@@ -46,8 +45,7 @@ class NotificationListener : NotificationListenerService() {
         @Volatile
         private var instance: NotificationListener? = null
 
-        private fun newKeySet(): MutableSet<String> =
-            java.util.concurrent.ConcurrentHashMap.newKeySet()
+        private fun newKeySet(): MutableSet<String> = java.util.concurrent.ConcurrentHashMap.newKeySet()
 
         fun getCount(packageName: String): Int = keysByPkg[packageName]?.size ?: 0
 
@@ -68,11 +66,12 @@ class NotificationListener : NotificationListenerService() {
             }
         }
 
-        fun find(key: String): StatusBarNotification? = try {
-            instance?.getActiveNotifications(arrayOf(key))?.firstOrNull()
-        } catch (_: Exception) {
-            null
-        }
+        fun find(key: String): StatusBarNotification? =
+            try {
+                instance?.getActiveNotifications(arrayOf(key))?.firstOrNull()
+            } catch (_: Exception) {
+                null
+            }
 
         /** The user's per-channel lock screen visibility for [key], or LockscreenPrivacy.NO_OVERRIDE. */
         fun lockscreenVisibilityOverride(key: String): Int {
@@ -90,7 +89,10 @@ class NotificationListener : NotificationListenerService() {
         }
 
         fun cancel(key: String) {
-            try { instance?.cancelNotification(key) } catch (_: Exception) {}
+            try {
+                instance?.cancelNotification(key)
+            } catch (_: Exception) {
+            }
         }
 
         fun cancelFor(packageName: String) {
@@ -115,22 +117,22 @@ class NotificationListener : NotificationListenerService() {
 
             if (keys.isEmpty()) return
 
-
             try {
                 self.cancelNotifications(keys.toTypedArray())
             } catch (_: Exception) {
                 for (key in keys) {
-                    try { self.cancelNotification(key) } catch (_: Exception) {}
+                    try {
+                        self.cancelNotification(key)
+                    } catch (_: Exception) {
+                    }
                 }
             }
         }
     }
 
-    private fun isGroupSummary(sbn: StatusBarNotification): Boolean =
-        sbn.notification.flags and Notification.FLAG_GROUP_SUMMARY != 0
+    private fun isGroupSummary(sbn: StatusBarNotification): Boolean = sbn.notification.flags and Notification.FLAG_GROUP_SUMMARY != 0
 
-    private fun shouldCount(sbn: StatusBarNotification): Boolean =
-        sbn.packageName !in skipPackages && isListable(sbn)
+    private fun shouldCount(sbn: StatusBarNotification): Boolean = sbn.packageName !in skipPackages && isListable(sbn)
 
     // Unlike shouldCount, keeps the Mudita Dial/Messages notifications: their counts come
     // from DirectBadgeHelper, but the notifications themselves can still be opened.
@@ -148,7 +150,11 @@ class NotificationListener : NotificationListenerService() {
         instance = this
         keysByPkg.clear()
         lastPostByPkg.clear()
-        val active = try { activeNotifications } catch (_: Exception) { null }
+        val active = try {
+            activeNotifications
+        } catch (_: Exception) {
+            null
+        }
         for (sbn in active.orEmpty()) {
             if (!shouldCount(sbn)) continue
             keysByPkg.getOrPut(sbn.packageName) { newKeySet() }.add(sbn.key)

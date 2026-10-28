@@ -12,8 +12,10 @@ import java.io.InputStream
 import kotlin.math.max
 
 object SvgRasterizer {
-
-    fun rasterize(input: InputStream, sizePx: Int): Bitmap? {
+    fun rasterize(
+        input: InputStream,
+        sizePx: Int,
+    ): Bitmap? {
         if (sizePx <= 0) return null
 
         var viewBoxX = 0f
@@ -54,7 +56,8 @@ object SvgRasterizer {
                             if (!d.isNullOrBlank()) {
                                 try {
                                     paths.add(PathParser.createPathFromPathData(d))
-                                } catch (_: Exception) {}
+                                } catch (_: Exception) {
+                                }
                             }
                         }
                     }

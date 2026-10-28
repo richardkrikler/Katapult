@@ -8,14 +8,17 @@ import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class PrefsManager(context: Context) {
-
+class PrefsManager(
+    context: Context,
+) {
     private val appContext: Context = context.applicationContext
 
     private val prefs: SharedPreferences =
         context.getSharedPreferences("katapult_prefs", Context.MODE_PRIVATE)
 
-    init { seedDefaultsOnce() }
+    init {
+        seedDefaultsOnce()
+    }
 
     /**
      * Defaults that ship on from 1.5, applied to fresh installs only. Existing users keep
@@ -39,29 +42,45 @@ class PrefsManager(context: Context) {
         editor.putBoolean(KEY_DEFAULTS_SEEDED, true).apply()
     }
 
-    private fun boolPref(key: String, def: Boolean): Boolean = try {
-        prefs.getBoolean(key, def)
-    } catch (_: ClassCastException) {
-        def
-    }
+    private fun boolPref(
+        key: String,
+        def: Boolean,
+    ): Boolean =
+        try {
+            prefs.getBoolean(key, def)
+        } catch (_: ClassCastException) {
+            def
+        }
 
-    private fun intPref(key: String, def: Int): Int = try {
-        prefs.getInt(key, def)
-    } catch (_: ClassCastException) {
-        def
-    }
+    private fun intPref(
+        key: String,
+        def: Int,
+    ): Int =
+        try {
+            prefs.getInt(key, def)
+        } catch (_: ClassCastException) {
+            def
+        }
 
-    private fun strPref(key: String, def: String?): String? = try {
-        prefs.getString(key, def)
-    } catch (_: ClassCastException) {
-        def
-    }
+    private fun strPref(
+        key: String,
+        def: String?,
+    ): String? =
+        try {
+            prefs.getString(key, def)
+        } catch (_: ClassCastException) {
+            def
+        }
 
-    private fun setPref(key: String, def: Set<String>): Set<String>? = try {
-        prefs.getStringSet(key, def)
-    } catch (_: ClassCastException) {
-        def
-    }
+    private fun setPref(
+        key: String,
+        def: Set<String>,
+    ): Set<String>? =
+        try {
+            prefs.getStringSet(key, def)
+        } catch (_: ClassCastException) {
+            def
+        }
 
     fun saveAppOrder(packages: List<String>) {
         val json = JSONArray(packages)
@@ -83,12 +102,20 @@ class PrefsManager(context: Context) {
         if (key in order) saveAppOrder(order.filterNot { it == key })
     }
 
-    fun saveShortcut(slot: String, packageName: String, activityName: String, shortcutId: String = "") {
+    fun saveShortcut(
+        slot: String,
+        packageName: String,
+        activityName: String,
+        shortcutId: String = "",
+    ) {
         val editor = prefs.edit()
             .putString("${slot}_package", packageName)
             .putString("${slot}_activity", activityName)
-        if (shortcutId.isEmpty()) editor.remove("${slot}_shortcut_id")
-        else editor.putString("${slot}_shortcut_id", shortcutId)
+        if (shortcutId.isEmpty()) {
+            editor.remove("${slot}_shortcut_id")
+        } else {
+            editor.putString("${slot}_shortcut_id", shortcutId)
+        }
         editor.apply()
     }
 
@@ -98,10 +125,12 @@ class PrefsManager(context: Context) {
         return Pair(pkg, activity)
     }
 
-    fun loadSlotShortcutId(slot: String): String? =
-        strPref("${slot}_shortcut_id", null)?.ifEmpty { null }
+    fun loadSlotShortcutId(slot: String): String? = strPref("${slot}_shortcut_id", null)?.ifEmpty { null }
 
-    fun clearSlotsForShortcut(packageName: String, shortcutId: String) {
+    fun clearSlotsForShortcut(
+        packageName: String,
+        shortcutId: String,
+    ) {
         val editor = prefs.edit()
         var changed = false
         for (slot in HOME_SLOTS) {
@@ -148,14 +177,21 @@ class PrefsManager(context: Context) {
         prefs.edit().putString(KEY_PINNED_SHORTCUTS, array.toString()).apply()
     }
 
-    fun addSavedShortcut(packageName: String, shortcutId: String, label: String): Boolean {
+    fun addSavedShortcut(
+        packageName: String,
+        shortcutId: String,
+        label: String,
+    ): Boolean {
         val current = getSavedShortcuts()
         if (current.any { it.packageName == packageName && it.shortcutId == shortcutId }) return false
         setSavedShortcuts(current + AppModel(packageName, label, "", shortcutId))
         return true
     }
 
-    fun removeSavedShortcut(packageName: String, shortcutId: String) {
+    fun removeSavedShortcut(
+        packageName: String,
+        shortcutId: String,
+    ) {
         setSavedShortcuts(
             getSavedShortcuts().filterNot {
                 it.packageName == packageName && it.shortcutId == shortcutId
@@ -163,7 +199,10 @@ class PrefsManager(context: Context) {
         )
     }
 
-    fun reconcileOrder(savedOrder: List<String>, currentApps: List<AppModel>): List<AppModel> {
+    fun reconcileOrder(
+        savedOrder: List<String>,
+        currentApps: List<AppModel>,
+    ): List<AppModel> {
         val appMap = currentApps.associateBy { it.key }.toMutableMap()
         val result = mutableListOf<AppModel>()
 
@@ -238,8 +277,11 @@ class PrefsManager(context: Context) {
     var pendingIconTarget: String?
         get() = strPref(KEY_PENDING_ICON_TARGET, null)
         set(value) {
-            if (value == null) prefs.edit().remove(KEY_PENDING_ICON_TARGET).apply()
-            else prefs.edit().putString(KEY_PENDING_ICON_TARGET, value).apply()
+            if (value == null) {
+                prefs.edit().remove(KEY_PENDING_ICON_TARGET).apply()
+            } else {
+                prefs.edit().putString(KEY_PENDING_ICON_TARGET, value).apply()
+            }
         }
 
     var showAlarm: Boolean
@@ -323,8 +365,11 @@ class PrefsManager(context: Context) {
     var homeLongPressAction: Int
         get() = intPref(
             KEY_HOME_LONG_PRESS,
-            if (boolPref(KEY_DISABLE_HOME_EDITING, false)) HOME_LONG_PRESS_APP_INFO
-            else HOME_LONG_PRESS_EDIT,
+            if (boolPref(KEY_DISABLE_HOME_EDITING, false)) {
+                HOME_LONG_PRESS_APP_INFO
+            } else {
+                HOME_LONG_PRESS_EDIT
+            },
         )
         set(value) = prefs.edit().putInt(KEY_HOME_LONG_PRESS, value).apply()
 
@@ -420,8 +465,7 @@ class PrefsManager(context: Context) {
         get() = boolPref(KEY_SCREENSAVER_ON_POWER, false)
         set(value) = prefs.edit().putBoolean(KEY_SCREENSAVER_ON_POWER, value).apply()
 
-    fun getLockscreenExcludedApps(): Set<String> =
-        setPref(KEY_LOCKSCREEN_WIDGET_EXCLUDED, emptySet()) ?: emptySet()
+    fun getLockscreenExcludedApps(): Set<String> = setPref(KEY_LOCKSCREEN_WIDGET_EXCLUDED, emptySet()) ?: emptySet()
 
     fun setLockscreenExcludedApps(packages: Set<String>) {
         prefs.edit().putStringSet(KEY_LOCKSCREEN_WIDGET_EXCLUDED, packages).apply()
@@ -435,9 +479,7 @@ class PrefsManager(context: Context) {
         get() = strPref(KEY_WALLPAPER_PATH, null)
         set(value) = prefs.edit().putString(KEY_WALLPAPER_PATH, value).apply()
 
-    fun getHiddenApps(): Set<String> {
-        return setPref(KEY_HIDDEN_APPS, emptySet()) ?: emptySet()
-    }
+    fun getHiddenApps(): Set<String> = setPref(KEY_HIDDEN_APPS, emptySet()) ?: emptySet()
 
     fun setHiddenApps(packages: Set<String>) {
         prefs.edit().putStringSet(KEY_HIDDEN_APPS, packages).apply()
@@ -451,11 +493,12 @@ class PrefsManager(context: Context) {
         setHiddenApps(getHiddenApps() - key)
     }
 
-    fun getIconOverride(key: String): String? {
-        return strPref("${KEY_ICON_OVERRIDE_PREFIX}$key", null)
-    }
+    fun getIconOverride(key: String): String? = strPref("${KEY_ICON_OVERRIDE_PREFIX}$key", null)
 
-    fun setIconOverride(key: String, value: String) {
+    fun setIconOverride(
+        key: String,
+        value: String,
+    ) {
         prefs.edit().putString("${KEY_ICON_OVERRIDE_PREFIX}$key", value).apply()
     }
 
@@ -463,11 +506,12 @@ class PrefsManager(context: Context) {
         prefs.edit().remove("${KEY_ICON_OVERRIDE_PREFIX}$key").apply()
     }
 
-    fun getAppRename(packageName: String): String? {
-        return strPref("${KEY_RENAME_PREFIX}$packageName", null)
-    }
+    fun getAppRename(packageName: String): String? = strPref("${KEY_RENAME_PREFIX}$packageName", null)
 
-    fun setAppRename(packageName: String, name: String?) {
+    fun setAppRename(
+        packageName: String,
+        name: String?,
+    ) {
         if (name.isNullOrBlank()) {
             prefs.edit().remove("${KEY_RENAME_PREFIX}$packageName").apply()
         } else {
@@ -493,7 +537,10 @@ class PrefsManager(context: Context) {
         return json.toString(2)
     }
 
-    private fun isDeadFileRef(key: String, value: String): Boolean {
+    private fun isDeadFileRef(
+        key: String,
+        value: String,
+    ): Boolean {
         val path = when {
             key == KEY_WALLPAPER_PATH || key == KEY_SCREENSAVER_WALLPAPER_PATH -> value
             key.startsWith(KEY_ICON_OVERRIDE_PREFIX) && value.startsWith("file:") ->
@@ -531,28 +578,37 @@ class PrefsManager(context: Context) {
         return editor.commit()
     }
 
-    private fun matchesStoredType(stored: Any?, incoming: Any?): Boolean = when (stored) {
-        null -> true
-        is Boolean -> incoming is Boolean
-        is Int, is Long, is Float -> incoming is Number
-        is String -> incoming is String
-        is Set<*> -> incoming is JSONArray
-        else -> true
-    }
+    private fun matchesStoredType(
+        stored: Any?,
+        incoming: Any?,
+    ): Boolean =
+        when (stored) {
+            null -> true
+            is Boolean -> incoming is Boolean
+            is Int, is Long, is Float -> incoming is Number
+            is String -> incoming is String
+            is Set<*> -> incoming is JSONArray
+            else -> true
+        }
 
-    private fun isUsableString(key: String, value: String): Boolean = when (key) {
-        KEY_CLOCK_FORMAT, KEY_DATE_FORMAT -> value == "system" || runCatching {
-            SimpleDateFormat(value, Locale.getDefault())
-        }.isSuccess
-        KEY_APP_ORDER -> runCatching { JSONArray(value) }.isSuccess
-        else -> true
-    }
+    private fun isUsableString(
+        key: String,
+        value: String,
+    ): Boolean =
+        when (key) {
+            KEY_CLOCK_FORMAT, KEY_DATE_FORMAT -> value == "system" || runCatching {
+                SimpleDateFormat(value, Locale.getDefault())
+            }.isSuccess
+            KEY_APP_ORDER -> runCatching { JSONArray(value) }.isSuccess
+            else -> true
+        }
 
-    private fun appVersionCode(context: Context): Long = try {
-        context.packageManager.getPackageInfo(context.packageName, 0).longVersionCode
-    } catch (_: Exception) {
-        0L
-    }
+    private fun appVersionCode(context: Context): Long =
+        try {
+            context.packageManager.getPackageInfo(context.packageName, 0).longVersionCode
+        } catch (_: Exception) {
+            0L
+        }
 
     fun clearAll(context: Context) {
         prefs.edit().clear().commit()
@@ -567,8 +623,14 @@ class PrefsManager(context: Context) {
         private const val CONFIG_TYPE = "katapult_config"
 
         val HOME_SLOTS = listOf(
-            "clock", "calendar", "phone", "center", "sms",
-            "extra_left", "extra_center", "extra_right",
+            "clock",
+            "calendar",
+            "phone",
+            "center",
+            "sms",
+            "extra_left",
+            "extra_center",
+            "extra_right",
         )
 
         private const val KEY_DEFAULTS_SEEDED = "defaults_seeded"

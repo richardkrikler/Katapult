@@ -1,24 +1,12 @@
 package com.gezimos.katapult.ui
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AppShortcut
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.Image
-import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.Notifications
-import androidx.compose.material.icons.rounded.NotificationsOff
-import androidx.compose.material.icons.rounded.RestartAlt
-import androidx.compose.material.icons.rounded.Restore
-import androidx.compose.material.icons.rounded.SwapVert
-import androidx.compose.material.icons.rounded.Upload
-import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,7 +14,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -44,26 +31,52 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AppShortcut
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.Image
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Notifications
+import androidx.compose.material.icons.rounded.NotificationsOff
+import androidx.compose.material.icons.rounded.RestartAlt
+import androidx.compose.material.icons.rounded.Restore
+import androidx.compose.material.icons.rounded.SwapVert
+import androidx.compose.material.icons.rounded.Upload
+import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
+import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.graphics.vector.VectorPainter
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gezimos.katapult.MainViewModel
@@ -74,21 +87,7 @@ import com.gezimos.katapult.service.DirectBadgeHelper
 import com.gezimos.katapult.util.DeviceHelper
 import com.gezimos.katapult.util.IconUtility
 import com.gezimos.katapult.util.ShortcutHelper
-import android.graphics.Bitmap
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Canvas
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
-import androidx.compose.ui.graphics.drawscope.translate
-import androidx.compose.ui.graphics.vector.VectorPainter
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.LayoutDirection
 import kotlin.math.abs
-
 
 @Composable
 fun AppContextMenu(
@@ -138,9 +137,12 @@ fun AppContextMenu(
                 }
                 BottomSheetOption(stringResource(R.string.app_info), icon = Icons.Rounded.Info) {
                     onDismiss()
-                    viewModel.launchIntent(context, Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                        data = Uri.parse("package:${app.packageName}")
-                    })
+                    viewModel.launchIntent(
+                        context,
+                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                            data = Uri.parse("package:${app.packageName}")
+                        },
+                    )
                 }
                 BottomSheetOption(stringResource(R.string.remove_shortcut), icon = Icons.Rounded.Delete) {
                     viewModel.removeShortcut(app)
@@ -159,15 +161,21 @@ fun AppContextMenu(
                 }
                 BottomSheetOption(stringResource(R.string.app_info), icon = Icons.Rounded.Info) {
                     onDismiss()
-                    viewModel.launchIntent(context, Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                        data = Uri.parse("package:${app.packageName}")
-                    })
+                    viewModel.launchIntent(
+                        context,
+                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                            data = Uri.parse("package:${app.packageName}")
+                        },
+                    )
                 }
                 BottomSheetOption(stringResource(R.string.notifications), icon = Icons.Rounded.Notifications) {
                     onDismiss()
-                    viewModel.launchIntent(context, Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
-                        putExtra(Settings.EXTRA_APP_PACKAGE, app.packageName)
-                    })
+                    viewModel.launchIntent(
+                        context,
+                        Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                            putExtra(Settings.EXTRA_APP_PACKAGE, app.packageName)
+                        },
+                    )
                 }
                 val isDirectBadge = DeviceHelper.isMuditaKompakt() &&
                     app.packageName in DirectBadgeHelper.DIRECT_PACKAGES
@@ -200,13 +208,18 @@ fun AppContextMenu(
                 val isSystemApp = try {
                     val appInfo = context.packageManager.getApplicationInfo(app.packageName, 0)
                     appInfo.flags and android.content.pm.ApplicationInfo.FLAG_SYSTEM != 0
-                } catch (_: Exception) { true }
+                } catch (_: Exception) {
+                    true
+                }
                 if (!isSystemApp) {
                     BottomSheetOption(stringResource(R.string.uninstall), icon = Icons.Rounded.Delete) {
                         onDismiss()
-                        viewModel.launchIntent(context, Intent(Intent.ACTION_UNINSTALL_PACKAGE).apply {
-                            data = Uri.parse("package:${app.packageName}")
-                        })
+                        viewModel.launchIntent(
+                            context,
+                            Intent(Intent.ACTION_UNINSTALL_PACKAGE).apply {
+                                data = Uri.parse("package:${app.packageName}")
+                            },
+                        )
                     }
                 }
             }
@@ -262,10 +275,12 @@ private fun RenameDialog(
     onConfirm: (String) -> Unit,
 ) {
     var textFieldValue by remember {
-        mutableStateOf(androidx.compose.ui.text.input.TextFieldValue(
-            text = currentName,
-            selection = androidx.compose.ui.text.TextRange(currentName.length),
-        ))
+        mutableStateOf(
+            androidx.compose.ui.text.input.TextFieldValue(
+                text = currentName,
+                selection = androidx.compose.ui.text.TextRange(currentName.length),
+            ),
+        )
     }
     val focusRequester = remember { androidx.compose.ui.focus.FocusRequester() }
 
@@ -325,7 +340,6 @@ private fun RenameDialog(
 }
 
 @OptIn(ExperimentalFoundationApi::class)
-
 @Composable
 private fun ChangeIconDialog(
     viewModel: MainViewModel,
@@ -430,8 +444,11 @@ private fun ChangeIconDialog(
                             onDragStart = { dragAccumulator = 0f },
                             onDragEnd = {
                                 if (abs(dragAccumulator) > 80f) {
-                                    if (dragAccumulator < 0 && page < totalPages - 1) page++
-                                    else if (dragAccumulator > 0 && page > 0) page--
+                                    if (dragAccumulator < 0 && page < totalPages - 1) {
+                                        page++
+                                    } else if (dragAccumulator > 0 && page > 0) {
+                                        page--
+                                    }
                                 }
                             },
                             onHorizontalDrag = { _, amount -> dragAccumulator += amount },
@@ -489,8 +506,11 @@ private fun ChangeIconDialog(
                             onDragStart = { dragAccumulator = 0f },
                             onDragEnd = {
                                 if (abs(dragAccumulator) > 80f) {
-                                    if (dragAccumulator < 0 && mPage < mTotalPages - 1) mPage++
-                                    else if (dragAccumulator > 0 && mPage > 0) mPage--
+                                    if (dragAccumulator < 0 && mPage < mTotalPages - 1) {
+                                        mPage++
+                                    } else if (dragAccumulator > 0 && mPage > 0) {
+                                        mPage--
+                                    }
                                 }
                             },
                             onHorizontalDrag = { _, amount -> dragAccumulator += amount },
@@ -542,13 +562,20 @@ private fun ChangeIconDialog(
 }
 
 @Composable
-private fun IconSourceTab(text: String, selected: Boolean, onClick: () -> Unit) {
+private fun IconSourceTab(
+    text: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
     val shape = RoundedCornerShape(10.dp)
     Box(
         modifier = Modifier
             .then(
-                if (selected) Modifier.background(LocalInk.current, shape)
-                else Modifier.border(1.5.dp, LocalInk.current, shape)
+                if (selected) {
+                    Modifier.background(LocalInk.current, shape)
+                } else {
+                    Modifier.border(1.5.dp, LocalInk.current, shape)
+                },
             )
             .clickable(onClick = onClick)
             .padding(horizontal = 12.dp, vertical = 6.dp),
@@ -564,7 +591,12 @@ private fun IconSourceTab(text: String, selected: Boolean, onClick: () -> Unit) 
 }
 
 @Composable
-private fun PickerPageBar(page: Int, totalPages: Int, onPrev: () -> Unit, onNext: () -> Unit) {
+private fun PickerPageBar(
+    page: Int,
+    totalPages: Int,
+    onPrev: () -> Unit,
+    onNext: () -> Unit,
+) {
     if (totalPages <= 1) return
     Row(
         Modifier.fillMaxWidth().padding(top = 8.dp),
@@ -586,9 +618,12 @@ private fun PickerPageBar(page: Int, totalPages: Int, onPrev: () -> Unit, onNext
                         .padding(horizontal = 2.dp)
                         .size(6.dp)
                         .then(
-                            if (i == page) Modifier.background(LocalInk.current, CircleShape)
-                            else Modifier.border(1.5.dp, LocalInk.current, CircleShape)
-                        )
+                            if (i == page) {
+                                Modifier.background(LocalInk.current, CircleShape)
+                            } else {
+                                Modifier.border(1.5.dp, LocalInk.current, CircleShape)
+                            },
+                        ),
                 )
             }
         }
@@ -600,7 +635,10 @@ private fun PickerPageBar(page: Int, totalPages: Int, onPrev: () -> Unit, onNext
     }
 }
 
-private fun rasterizeVectorIcon(painter: VectorPainter, density: Density): Bitmap {
+private fun rasterizeVectorIcon(
+    painter: VectorPainter,
+    density: Density,
+): Bitmap {
     val sizePx = 192
     val image = ImageBitmap(sizePx, sizePx)
     val inner = sizePx * 0.6f
@@ -686,8 +724,11 @@ private fun AppShortcutsDialog(
                         onDragStart = { dragAccumulator = 0f },
                         onDragEnd = {
                             if (abs(dragAccumulator) > 80f) {
-                                if (dragAccumulator < 0 && page < totalPages - 1) page++
-                                else if (dragAccumulator > 0 && page > 0) page--
+                                if (dragAccumulator < 0 && page < totalPages - 1) {
+                                    page++
+                                } else if (dragAccumulator > 0 && page > 0) {
+                                    page--
+                                }
                             }
                         },
                         onHorizontalDrag = { _, amount -> dragAccumulator += amount },
@@ -700,8 +741,11 @@ private fun AppShortcutsDialog(
                     val isEnabled = id in enabledIds
                     val sizePx = remember { (36 * context.resources.displayMetrics.density).toInt() }
                     val bitmap = remember(id) {
-                        if (id in staleIds) IconUtility.loadIcon(context, app.packageName, "", sizePx)
-                        else IconUtility.loadShortcutIcon(context, app.packageName, id, sizePx)
+                        if (id in staleIds) {
+                            IconUtility.loadIcon(context, app.packageName, "", sizePx)
+                        } else {
+                            IconUtility.loadShortcutIcon(context, app.packageName, id, sizePx)
+                        }
                     }
                     Row(
                         modifier = Modifier
@@ -732,8 +776,11 @@ private fun AppShortcutsDialog(
                             modifier = Modifier
                                 .size(20.dp)
                                 .then(
-                                    if (isEnabled) Modifier.background(LocalInk.current, checkShape)
-                                    else Modifier.border(2.5.dp, LocalInk.current, checkShape)
+                                    if (isEnabled) {
+                                        Modifier.background(LocalInk.current, checkShape)
+                                    } else {
+                                        Modifier.border(2.5.dp, LocalInk.current, checkShape)
+                                    },
                                 ),
                             contentAlignment = Alignment.Center,
                         ) {
@@ -779,9 +826,12 @@ private fun AppShortcutsDialog(
                                     .padding(horizontal = 2.dp)
                                     .size(6.dp)
                                     .then(
-                                        if (i == page) Modifier.background(LocalInk.current, CircleShape)
-                                        else Modifier.border(1.5.dp, LocalInk.current, CircleShape)
-                                    )
+                                        if (i == page) {
+                                            Modifier.background(LocalInk.current, CircleShape)
+                                        } else {
+                                            Modifier.border(1.5.dp, LocalInk.current, CircleShape)
+                                        },
+                                    ),
                             )
                         }
                     }

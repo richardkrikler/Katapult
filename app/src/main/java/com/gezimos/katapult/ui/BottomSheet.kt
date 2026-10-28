@@ -22,9 +22,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionContext
@@ -98,13 +98,13 @@ fun BottomSheet(
                     Column(
                         Modifier
                             .fillMaxWidth()
-                            .background(LocalSurface.current)
+                            .background(LocalSurface.current),
                     ) {
                         Box(
                             Modifier
                                 .fillMaxWidth()
                                 .height(2.5.dp)
-                                .background(LocalInk.current)
+                                .background(LocalInk.current),
                         )
                         Column(Modifier.padding(16.dp)) {
                             currentContent()
@@ -139,14 +139,17 @@ private class BottomSheetDialogLayout(
     context: Context,
     override val window: Window,
     private val onDismiss: () -> Unit,
-) : AbstractComposeView(context), DialogWindowProvider {
-
+) : AbstractComposeView(context),
+    DialogWindowProvider {
     private var content: @Composable () -> Unit by mutableStateOf({})
 
     override var shouldCreateCompositionOnAttachedToWindow: Boolean = false
         private set
 
-    fun setContent(parent: CompositionContext, content: @Composable () -> Unit) {
+    fun setContent(
+        parent: CompositionContext,
+        content: @Composable () -> Unit,
+    ) {
         setParentCompositionContext(parent)
         this.content = content
         shouldCreateCompositionOnAttachedToWindow = true
@@ -174,12 +177,12 @@ private class BottomSheetDialog(
     dialogId: UUID,
     private val hideStatusBar: Boolean,
 ) : ComponentDialog(
-    ContextThemeWrapper(
-        composeView.context,
-        androidx.compose.material3.R.style.EdgeToEdgeFloatingDialogWindowTheme,
-    )
-), ViewRootForInspector {
-
+        ContextThemeWrapper(
+            composeView.context,
+            androidx.compose.material3.R.style.EdgeToEdgeFloatingDialogWindowTheme,
+        ),
+    ),
+    ViewRootForInspector {
     private val dialogLayout: BottomSheetDialogLayout
     private val activity = composeView.context as? Activity
     private var insetsListener: View.OnApplyWindowInsetsListener? = null
@@ -197,7 +200,10 @@ private class BottomSheetDialog(
             setTag(androidx.compose.ui.R.id.compose_view_saveable_id_tag, "Dialog:$dialogId")
             clipChildren = false
             outlineProvider = object : ViewOutlineProvider() {
-                override fun getOutline(view: View, result: Outline) {
+                override fun getOutline(
+                    view: View,
+                    result: Outline,
+                ) {
                     result.setRect(0, 0, view.width, view.height)
                     result.alpha = 0f
                 }
@@ -250,7 +256,10 @@ private class BottomSheetDialog(
         }
     }
 
-    fun setContent(parent: CompositionContext, content: @Composable () -> Unit) {
+    fun setContent(
+        parent: CompositionContext,
+        content: @Composable () -> Unit,
+    ) {
         dialogLayout.setContent(parent, content)
     }
 

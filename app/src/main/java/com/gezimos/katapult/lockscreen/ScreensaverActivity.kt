@@ -13,7 +13,6 @@ import com.gezimos.katapult.util.EinkRefreshHelper
 import com.gezimos.katapult.util.PrefsManager
 
 class ScreensaverActivity : ComponentActivity() {
-
     companion object {
         const val EXTRA_FROM_POWER = "from_power"
 
@@ -44,8 +43,11 @@ class ScreensaverActivity : ComponentActivity() {
             isAppearanceLightNavigationBars = light
             systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             hide(WindowInsetsCompat.Type.navigationBars())
-            if (prefs.hideStatusBar) hide(WindowInsetsCompat.Type.statusBars())
-            else show(WindowInsetsCompat.Type.statusBars())
+            if (prefs.hideStatusBar) {
+                hide(WindowInsetsCompat.Type.statusBars())
+            } else {
+                show(WindowInsetsCompat.Type.statusBars())
+            }
         }
 
         setContent { ScreensaverView() }

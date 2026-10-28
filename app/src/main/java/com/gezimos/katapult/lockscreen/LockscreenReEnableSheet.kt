@@ -5,7 +5,6 @@ import android.provider.Settings
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NotificationsOff
-import androidx.compose.material.icons.rounded.Settings as SettingsIcon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -21,6 +20,7 @@ import com.gezimos.katapult.ui.BottomSheetOption
 import com.gezimos.katapult.ui.LatoFamily
 import com.gezimos.katapult.ui.LocalInk
 import com.gezimos.katapult.util.PrefsManager
+import androidx.compose.material.icons.rounded.Settings as SettingsIcon
 
 /**
  * Shown when the lockscreen widget is enabled but its accessibility service is off —
@@ -54,7 +54,8 @@ fun LockscreenReEnableSheet(viewModel: MainViewModel) {
             viewModel.resolveLockscreenReEnable()
             try {
                 context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
-            } catch (_: Exception) {}
+            } catch (_: Exception) {
+            }
         }
         BottomSheetOption(
             text = stringResource(R.string.lockscreen_reenable_disable),

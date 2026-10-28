@@ -7,19 +7,25 @@ import android.net.Uri
 import java.io.File
 
 object BitmapHelper {
-
     fun screenMaxSide(context: Context): Int {
         val m = context.resources.displayMetrics
         return maxOf(m.widthPixels, m.heightPixels).coerceAtLeast(1)
     }
 
-    private fun sampleFor(srcW: Int, srcH: Int, maxSide: Int): Int {
+    private fun sampleFor(
+        srcW: Int,
+        srcH: Int,
+        maxSide: Int,
+    ): Int {
         var sample = 1
         while (srcW / sample > maxSide || srcH / sample > maxSide) sample *= 2
         return sample
     }
 
-    fun decodeFile(path: String, maxSide: Int): Bitmap? {
+    fun decodeFile(
+        path: String,
+        maxSide: Int,
+    ): Bitmap? {
         return try {
             if (!File(path).exists()) return null
             val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
@@ -36,7 +42,11 @@ object BitmapHelper {
         }
     }
 
-    fun decodeUri(context: Context, uri: Uri, maxSide: Int): Bitmap? {
+    fun decodeUri(
+        context: Context,
+        uri: Uri,
+        maxSide: Int,
+    ): Bitmap? {
         return try {
             val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
             context.contentResolver.openInputStream(uri)?.use {

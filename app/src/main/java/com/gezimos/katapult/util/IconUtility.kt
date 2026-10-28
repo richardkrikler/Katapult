@@ -15,23 +15,25 @@ import android.util.LruCache
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.createBitmap
+import com.gezimos.katapult.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import com.gezimos.katapult.R
 import org.xmlpull.v1.XmlPullParser
 import java.io.File
 
 object IconUtility {
-
     private val bitmapCache: LruCache<String, Bitmap> = object : LruCache<String, Bitmap>(
         maxOf(
             (Runtime.getRuntime().maxMemory() / 1024 / 8).toInt(),
-            50 * 128 * 128 * 4 / 1024
-        )
+            50 * 128 * 128 * 4 / 1024,
+        ),
     ) {
-        override fun sizeOf(key: String, value: Bitmap): Int = value.byteCount / 1024
+        override fun sizeOf(
+            key: String,
+            value: Bitmap,
+        ): Int = value.byteCount / 1024
     }
 
     private val customIcons = mapOf(
@@ -79,7 +81,11 @@ object IconUtility {
         "org.onekash.kashcal" to R.drawable.calendar,
     )
 
-    data class BundledIcon(val resId: Int, val resName: String, val label: String)
+    data class BundledIcon(
+        val resId: Int,
+        val resName: String,
+        val label: String,
+    )
 
     val bundledIcons: List<BundledIcon> = listOf(
         BundledIcon(R.drawable.signal, "signal", "Signal"),
@@ -127,8 +133,7 @@ object IconUtility {
         BundledIcon(R.drawable.librofm, "librofm", "Libro.fm"),
     )
 
-    private fun resolveBundled(resName: String): Int? =
-        bundledIcons.firstOrNull { it.resName == resName }?.resId
+    private fun resolveBundled(resName: String): Int? = bundledIcons.firstOrNull { it.resName == resName }?.resId
 
     @Volatile
     private var overrides: Map<String, String>? = null
@@ -137,7 +142,10 @@ object IconUtility {
         overrides = null
     }
 
-    private fun overrideFor(context: Context, key: String): String? {
+    private fun overrideFor(
+        context: Context,
+        key: String,
+    ): String? {
         var map = overrides
         if (map == null) {
             map = runCatching {
@@ -177,7 +185,11 @@ object IconUtility {
         keys.forEach { bitmapCache.remove(it) }
     }
 
-    fun renderDrawableResource(context: Context, resId: Int, sizePx: Int): Bitmap? {
+    fun renderDrawableResource(
+        context: Context,
+        resId: Int,
+        sizePx: Int,
+    ): Bitmap? {
         return try {
             val drawable = ContextCompat.getDrawable(context, resId) ?: return null
             renderBundledIcon(drawable, sizePx)
@@ -186,7 +198,12 @@ object IconUtility {
         }
     }
 
-    fun loadIcon(context: Context, packageName: String, activityClass: String, sizePx: Int): Bitmap? {
+    fun loadIcon(
+        context: Context,
+        packageName: String,
+        activityClass: String,
+        sizePx: Int,
+    ): Bitmap? {
         if (packageName.isBlank() || sizePx <= 0) return null
 
         val override = overrideFor(context, packageName)
@@ -210,7 +227,9 @@ object IconUtility {
                     } else {
                         extractMonochromeFromManifest(context, packageName)
                     }
-                } else null
+                } else {
+                    null
+                }
 
                 when {
                     monoLayer != null -> renderMonochromeIcon(monoLayer, sizePx)
@@ -228,7 +247,11 @@ object IconUtility {
         return bitmap
     }
 
-    private fun loadOverrideBitmap(context: Context, override: String, sizePx: Int): Bitmap? {
+    private fun loadOverrideBitmap(
+        context: Context,
+        override: String,
+        sizePx: Int,
+    ): Bitmap? {
         return try {
             when {
                 override.startsWith("file:") -> {
@@ -249,7 +272,10 @@ object IconUtility {
         }
     }
 
-    private fun extractMonochromeFromManifest(context: Context, packageName: String): Drawable? {
+    private fun extractMonochromeFromManifest(
+        context: Context,
+        packageName: String,
+    ): Drawable? {
         return try {
             val pm = context.packageManager
             val appInfo = pm.getApplicationInfo(packageName, 0)
@@ -278,7 +304,10 @@ object IconUtility {
         }
     }
 
-    private fun renderMonochromeIcon(drawable: Drawable, sizePx: Int): Bitmap {
+    private fun renderMonochromeIcon(
+        drawable: Drawable,
+        sizePx: Int,
+    ): Bitmap {
         val size = sizePx.coerceAtLeast(1)
         val layerSize = (size * 108f / 72f).toInt()
         val offset = (layerSize - size) / 2
@@ -299,7 +328,10 @@ object IconUtility {
         return result
     }
 
-    private fun renderAdaptiveIcon(icon: AdaptiveIconDrawable, sizePx: Int): Bitmap {
+    private fun renderAdaptiveIcon(
+        icon: AdaptiveIconDrawable,
+        sizePx: Int,
+    ): Bitmap {
         val size = sizePx.coerceAtLeast(1)
         val layerSize = (size * 108f / 72f).toInt()
         val offset = (layerSize - size) / 2
@@ -323,7 +355,10 @@ object IconUtility {
         return result
     }
 
-    private fun drawableToBitmap(drawable: Drawable, sizePx: Int): Bitmap {
+    private fun drawableToBitmap(
+        drawable: Drawable,
+        sizePx: Int,
+    ): Bitmap {
         val size = sizePx.coerceAtLeast(1)
         val bitmap = createBitmap(size, size, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
@@ -332,7 +367,11 @@ object IconUtility {
         return bitmap
     }
 
-    private fun renderBundledIcon(drawable: Drawable, sizePx: Int, fraction: Float = 0.60f): Bitmap {
+    private fun renderBundledIcon(
+        drawable: Drawable,
+        sizePx: Int,
+        fraction: Float = 0.60f,
+    ): Bitmap {
         val size = sizePx.coerceAtLeast(1)
         val maxInner = (size * fraction).toInt().coerceAtLeast(1)
         val iw = drawable.intrinsicWidth.takeIf { it > 0 } ?: maxInner
@@ -373,7 +412,12 @@ object IconUtility {
         Unit
     }
 
-    fun loadShortcutIcon(context: Context, packageName: String, shortcutId: String, sizePx: Int): Bitmap? {
+    fun loadShortcutIcon(
+        context: Context,
+        packageName: String,
+        shortcutId: String,
+        sizePx: Int,
+    ): Bitmap? {
         if (packageName.isBlank() || shortcutId.isBlank() || sizePx <= 0) return null
         val override = overrideFor(context, "$packageName|$shortcutId")
 
@@ -408,5 +452,4 @@ object IconUtility {
         bitmapCache.put(cacheKey, bitmap)
         return bitmap
     }
-
 }

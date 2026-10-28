@@ -81,7 +81,11 @@ private data class SsClock(
     val weather: WeatherHelper.Weather?,
 )
 
-private data class SsRow(val count: Int, val label: String, val bitmap: Bitmap?)
+private data class SsRow(
+    val count: Int,
+    val label: String,
+    val bitmap: Bitmap?,
+)
 
 @Composable
 fun ScreensaverView() {
@@ -139,7 +143,10 @@ fun ScreensaverView() {
         else -> {
             DisposableEffect(Unit) {
                 val receiver = object : BroadcastReceiver() {
-                    override fun onReceive(c: Context, i: Intent) {
+                    override fun onReceive(
+                        c: Context,
+                        i: Intent,
+                    ) {
                         if (i.action == Intent.ACTION_BATTERY_CHANGED) {
                             val level = i.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
                             val scale = i.getIntExtra(BatteryManager.EXTRA_SCALE, 100)
@@ -156,13 +163,21 @@ fun ScreensaverView() {
                         clock = computeClock(context, prefs)
                     }
                 }
-                context.registerReceiver(receiver, IntentFilter().apply {
-                    addAction(Intent.ACTION_TIME_TICK)
-                    addAction(Intent.ACTION_TIME_CHANGED)
-                    addAction(Intent.ACTION_TIMEZONE_CHANGED)
-                    addAction(Intent.ACTION_BATTERY_CHANGED)
-                })
-                onDispose { try { context.unregisterReceiver(receiver) } catch (_: Exception) {} }
+                context.registerReceiver(
+                    receiver,
+                    IntentFilter().apply {
+                        addAction(Intent.ACTION_TIME_TICK)
+                        addAction(Intent.ACTION_TIME_CHANGED)
+                        addAction(Intent.ACTION_TIMEZONE_CHANGED)
+                        addAction(Intent.ACTION_BATTERY_CHANGED)
+                    },
+                )
+                onDispose {
+                    try {
+                        context.unregisterReceiver(receiver)
+                    } catch (_: Exception) {
+                    }
+                }
             }
             DisposableEffect(Unit) {
                 val main = Handler(Looper.getMainLooper())
@@ -199,7 +214,9 @@ fun ScreensaverView() {
                         Modifier.pointerInput(Unit) {
                             detectTapGestures(onDoubleTap = { lit = !lit })
                         }
-                    } else Modifier
+                    } else {
+                        Modifier
+                    },
                 ),
         ) {
             if (prefs.screensaverWallpaper && wallpaper != null) {
@@ -246,7 +263,10 @@ fun ScreensaverView() {
 }
 
 @Composable
-private fun NotificationIsland(rows: List<SsRow>, overflow: Int) {
+private fun NotificationIsland(
+    rows: List<SsRow>,
+    overflow: Int,
+) {
     val ink = LocalInk.current
     val surface = LocalSurface.current
     val shape = RoundedCornerShape(14.dp)
@@ -324,11 +344,17 @@ private fun dateFormatter(pattern: String): SimpleDateFormat {
     return dateFormatCache.getOrPut("$pattern|$locale") { SimpleDateFormat(pattern, locale) }
 }
 
-private fun computeClock(context: Context, prefs: PrefsManager): SsClock {
+private fun computeClock(
+    context: Context,
+    prefs: PrefsManager,
+): SsClock {
     val now = Date()
     val clockPattern = prefs.clockFormat
-    val fullTime = if (clockPattern == "system") DateFormat.getTimeFormat(context).format(now)
-        else dateFormatter(clockPattern).format(now)
+    val fullTime = if (clockPattern == "system") {
+        DateFormat.getTimeFormat(context).format(now)
+    } else {
+        dateFormatter(clockPattern).format(now)
+    }
     val time = fullTime.replace(AM_PM_REGEX, "").trim()
     val upper = fullTime.uppercase()
     val amPm = when {
@@ -337,8 +363,11 @@ private fun computeClock(context: Context, prefs: PrefsManager): SsClock {
         else -> null
     }
     val datePattern = prefs.dateFormat
-    val date = if (datePattern == "system") DateFormat.getLongDateFormat(context).format(now)
-        else dateFormatter(datePattern).format(now)
+    val date = if (datePattern == "system") {
+        DateFormat.getLongDateFormat(context).format(now)
+    } else {
+        dateFormatter(datePattern).format(now)
+    }
 
     val alarm = (context.getSystemService(Context.ALARM_SERVICE) as android.app.AlarmManager)
         .nextAlarmClock?.let { DateFormat.getTimeFormat(context).format(Date(it.triggerTime)) }
@@ -381,7 +410,11 @@ private fun computeRows(
     return rows to (counts.size - rows.size)
 }
 
-private fun ssLabel(context: Context, prefs: PrefsManager, pkg: String): String? {
+private fun ssLabel(
+    context: Context,
+    prefs: PrefsManager,
+    pkg: String,
+): String? {
     prefs.getAppRename(pkg)?.let { return it }
     return try {
         context.packageManager.getApplicationLabel(context.packageManager.getApplicationInfo(pkg, 0)).toString()

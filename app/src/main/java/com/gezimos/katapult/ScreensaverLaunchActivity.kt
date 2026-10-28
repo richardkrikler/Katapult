@@ -6,7 +6,6 @@ import android.os.Bundle
 import com.gezimos.katapult.lockscreen.ScreensaverActivity
 
 class ScreensaverLaunchActivity : Activity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
@@ -17,7 +16,8 @@ class ScreensaverLaunchActivity : Activity() {
                         Intent.FLAG_ACTIVITY_TASK_ON_HOME,
                 ),
             )
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
         finish()
         overridePendingTransition(0, 0)
     }

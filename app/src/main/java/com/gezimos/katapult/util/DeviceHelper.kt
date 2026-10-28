@@ -5,13 +5,11 @@ import android.content.Intent
 import android.os.Build
 
 object DeviceHelper {
-
-    fun isMuditaKompakt(): Boolean {
-        return Build.BRAND.equals("Mudita", ignoreCase = true) ||
-               Build.MODEL.equals("Kompakt", ignoreCase = true) ||
-               Build.DEVICE.equals("Kompakt", ignoreCase = true) ||
-               Build.PRODUCT.equals("Kompakt", ignoreCase = true)
-    }
+    fun isMuditaKompakt(): Boolean =
+        Build.BRAND.equals("Mudita", ignoreCase = true) ||
+            Build.MODEL.equals("Kompakt", ignoreCase = true) ||
+            Build.DEVICE.equals("Kompakt", ignoreCase = true) ||
+            Build.PRODUCT.equals("Kompakt", ignoreCase = true)
 
     fun isDefaultLauncher(context: Context): Boolean {
         val intent = Intent(Intent.ACTION_MAIN).apply { addCategory(Intent.CATEGORY_HOME) }

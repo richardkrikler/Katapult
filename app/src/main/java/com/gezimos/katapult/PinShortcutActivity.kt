@@ -9,7 +9,6 @@ import com.gezimos.katapult.util.PrefsManager
 import com.gezimos.katapult.util.ShortcutHelper
 
 class PinShortcutActivity : Activity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         handlePinRequest(intent)
@@ -51,6 +50,7 @@ class PinShortcutActivity : Activity() {
                 ),
                 Toast.LENGTH_SHORT,
             ).show()
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
     }
 }

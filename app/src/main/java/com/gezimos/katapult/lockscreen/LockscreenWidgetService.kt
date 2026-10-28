@@ -52,24 +52,24 @@ import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
-import com.gezimos.katapult.ui.LocalInk
-import com.gezimos.katapult.ui.LocalSurface
-import com.gezimos.katapult.ui.MusicWidget
-import com.gezimos.katapult.ui.NoIndication
-import com.gezimos.katapult.util.AudioWidgetHelper
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 import com.gezimos.katapult.R
 import com.gezimos.katapult.service.DirectBadgeHelper
 import com.gezimos.katapult.service.NotificationListener
 import com.gezimos.katapult.ui.EinkTintMatrix
 import com.gezimos.katapult.ui.EinkTintMatrixDark
+import com.gezimos.katapult.ui.LocalInk
+import com.gezimos.katapult.ui.LocalSurface
+import com.gezimos.katapult.ui.MusicWidget
+import com.gezimos.katapult.ui.NoIndication
+import com.gezimos.katapult.util.AudioWidgetHelper
 import com.gezimos.katapult.util.DeviceHelper
 import com.gezimos.katapult.util.IconUtility
 import com.gezimos.katapult.util.PrefsManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.hypot
 import kotlin.math.roundToInt
@@ -98,8 +98,10 @@ import kotlin.math.roundToInt
  * and the lockscreen_widget and section_experimental strings.
  */
 class LockscreenWidgetService :
-    AccessibilityService(), LifecycleOwner, ViewModelStoreOwner, SavedStateRegistryOwner {
-
+    AccessibilityService(),
+    LifecycleOwner,
+    ViewModelStoreOwner,
+    SavedStateRegistryOwner {
     private val lifecycleRegistry = LifecycleRegistry(this)
     private val viewModelStoreInstance = ViewModelStore()
     private val savedStateController = SavedStateRegistryController.create(this)
@@ -125,11 +127,12 @@ class LockscreenWidgetService :
          * screensaver to lock the screen so Home/Back can't return to the launcher.
          * Returns false when the service isn't enabled (nothing an app can do then).
          */
-        fun lockScreen(): Boolean = try {
-            instance?.performGlobalAction(GLOBAL_ACTION_LOCK_SCREEN) ?: false
-        } catch (_: Exception) {
-            false
-        }
+        fun lockScreen(): Boolean =
+            try {
+                instance?.performGlobalAction(GLOBAL_ACTION_LOCK_SCREEN) ?: false
+            } catch (_: Exception) {
+                false
+            }
 
         /**
          * Called from MainActivity's onResume/onPause. While the launcher is foreground
@@ -155,11 +158,13 @@ class LockscreenWidgetService :
         private var screensaverForeground = false
 
         private const val MUDITA_AUDIO_PLAYER = "com.mudita.audio.player"
+
         // The stock MuditaOS widget measures 332dp wide with its top edge at 220dp. dp()
         // truncates, so 332dp lands on 441px and leaves the stock widget's last column
         // showing when it sits underneath ours. 334dp covers it with a pixel to spare.
         private const val MUSIC_WIDGET_WIDTH_DP = 334f
         private const val MUSIC_WIDGET_TOP_DP = 220f
+
         // Same corner as the notification island (widgetBackground uses dp(14)).
         private const val MUSIC_WIDGET_CORNER_DP = 14
         private const val KEYGUARD_RECHECK_MS = 120L
@@ -204,7 +209,10 @@ class LockscreenWidgetService :
     private var keyguardPossible = true
 
     private val screenReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
+        override fun onReceive(
+            context: Context,
+            intent: Intent,
+        ) {
             when (intent.action) {
                 Intent.ACTION_SCREEN_OFF -> {
                     keyguardPossible = true
@@ -227,7 +235,8 @@ class LockscreenWidgetService :
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     .putExtra(ScreensaverActivity.EXTRA_FROM_POWER, true),
             )
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
     }
 
     override fun onServiceConnected() {
@@ -243,11 +252,14 @@ class LockscreenWidgetService :
                 }
             }
         }
-        registerReceiver(screenReceiver, IntentFilter().apply {
-            addAction(Intent.ACTION_SCREEN_ON)
-            addAction(Intent.ACTION_SCREEN_OFF)
-            addAction(Intent.ACTION_USER_PRESENT)
-        })
+        registerReceiver(
+            screenReceiver,
+            IntentFilter().apply {
+                addAction(Intent.ACTION_SCREEN_ON)
+                addAction(Intent.ACTION_SCREEN_OFF)
+                addAction(Intent.ACTION_USER_PRESENT)
+            },
+        )
         if (DeviceHelper.isMuditaKompakt()) {
             directBadges = DirectBadgeHelper.getInstance(this).apply {
                 addListener(badgeListener)
@@ -287,7 +299,10 @@ class LockscreenWidgetService :
             it.release()
         }
         directBadges = null
-        try { unregisterReceiver(screenReceiver) } catch (_: Exception) {}
+        try {
+            unregisterReceiver(screenReceiver)
+        } catch (_: Exception) {
+        }
         removeOverlay()
         removeClockCover()
         super.onDestroy()
@@ -357,10 +372,16 @@ class LockscreenWidgetService :
                 val dark = prefs.darkMode
                 CompositionLocalProvider(
                     androidx.compose.foundation.LocalIndication provides NoIndication,
-                    LocalInk provides if (dark) androidx.compose.ui.graphics.Color.White
-                        else androidx.compose.ui.graphics.Color.Black,
-                    LocalSurface provides if (dark) androidx.compose.ui.graphics.Color.Black
-                        else androidx.compose.ui.graphics.Color.White,
+                    LocalInk provides if (dark) {
+                        androidx.compose.ui.graphics.Color.White
+                    } else {
+                        androidx.compose.ui.graphics.Color.Black
+                    },
+                    LocalSurface provides if (dark) {
+                        androidx.compose.ui.graphics.Color.Black
+                    } else {
+                        androidx.compose.ui.graphics.Color.White
+                    },
                 ) {
                     MusicWidget(
                         info = media,
@@ -401,8 +422,14 @@ class LockscreenWidgetService :
 
     private fun removeMusicOverlay() {
         musicOverlay?.let {
-            try { getSystemService(WindowManager::class.java).removeView(it) } catch (_: Exception) {}
-            try { it.disposeComposition() } catch (_: Exception) {}
+            try {
+                getSystemService(WindowManager::class.java).removeView(it)
+            } catch (_: Exception) {
+            }
+            try {
+                it.disposeComposition()
+            } catch (_: Exception) {
+            }
         }
         musicOverlay = null
     }
@@ -439,7 +466,11 @@ class LockscreenWidgetService :
             return
         }
         if (messageOverlay != null) return
-        val lato = try { ResourcesCompat.getFont(this, R.font.lato) } catch (_: Exception) { null }
+        val lato = try {
+            ResourcesCompat.getFont(this, R.font.lato)
+        } catch (_: Exception) {
+            null
+        }
         val view = TextView(this).apply {
             text = message
             setBackgroundColor(if (prefs.darkMode) Color.BLACK else Color.WHITE)
@@ -471,22 +502,31 @@ class LockscreenWidgetService :
 
     private fun removeMessageOverlay() {
         messageOverlay?.let {
-            try { getSystemService(WindowManager::class.java).removeView(it) } catch (_: Exception) {}
+            try {
+                getSystemService(WindowManager::class.java).removeView(it)
+            } catch (_: Exception) {
+            }
         }
         messageOverlay = null
     }
 
     private fun removeClockCover() {
         clockCover?.let {
-            try { getSystemService(WindowManager::class.java).removeView(it) } catch (_: Exception) {}
+            try {
+                getSystemService(WindowManager::class.java).removeView(it)
+            } catch (_: Exception) {
+            }
         }
         clockCover = null
     }
 
     private fun statusBarHeightPx(): Int {
         val id = resources.getIdentifier("status_bar_height", "dimen", "android")
-        return if (id > 0) resources.getDimensionPixelSize(id)
-        else (24 * resources.displayMetrics.density).toInt()
+        return if (id > 0) {
+            resources.getDimensionPixelSize(id)
+        } else {
+            (24 * resources.displayMetrics.density).toInt()
+        }
     }
 
     private fun evaluate() {
@@ -550,16 +590,18 @@ class LockscreenWidgetService :
     }
 
     /** An incoming or active call shows its own UI over the lock screen — hide the widget then. */
-    private fun inCall(): Boolean = try {
-        when (getSystemService(AudioManager::class.java).mode) {
-            AudioManager.MODE_RINGTONE,
-            AudioManager.MODE_IN_CALL,
-            AudioManager.MODE_IN_COMMUNICATION -> true
-            else -> false
+    private fun inCall(): Boolean =
+        try {
+            when (getSystemService(AudioManager::class.java).mode) {
+                AudioManager.MODE_RINGTONE,
+                AudioManager.MODE_IN_CALL,
+                AudioManager.MODE_IN_COMMUNICATION,
+                -> true
+                else -> false
+            }
+        } catch (_: Exception) {
+            false
         }
-    } catch (_: Exception) {
-        false
-    }
 
     private fun currentCounts(): Map<String, Int> {
         val merged = NotificationListener.getAllCounts().toMutableMap()
@@ -585,7 +627,10 @@ class LockscreenWidgetService :
             .map { it.key to it.value }
     }
 
-    private fun addOverlay(rows: List<Pair<String, Int>>, total: Int) {
+    private fun addOverlay(
+        rows: List<Pair<String, Int>>,
+        total: Int,
+    ) {
         val view = buildWidget(rows, total) ?: return
         val savedY = prefs.lockscreenWidgetY
         val params = WindowManager.LayoutParams().apply {
@@ -614,7 +659,10 @@ class LockscreenWidgetService :
         mainHandler.removeCallbacks(editTimeout)
         editing = false
         overlay?.let {
-            try { getSystemService(WindowManager::class.java).removeView(it) } catch (_: Exception) {}
+            try {
+                getSystemService(WindowManager::class.java).removeView(it)
+            } catch (_: Exception) {
+            }
         }
         overlay = null
         overlayParams = null
@@ -683,7 +731,10 @@ class LockscreenWidgetService :
         const val TAP = 3
     }
 
-    private fun attachGestures(view: View, params: WindowManager.LayoutParams) {
+    private fun attachGestures(
+        view: View,
+        params: WindowManager.LayoutParams,
+    ) {
         var startRawX = 0f
         var startRawY = 0f
         var startParamY = 0
@@ -750,7 +801,8 @@ class LockscreenWidgetService :
                             params.y = newY
                             try {
                                 getSystemService(WindowManager::class.java).updateViewLayout(v, params)
-                            } catch (_: Exception) {}
+                            } catch (_: Exception) {
+                            }
                         }
                     }
                     true
@@ -780,7 +832,10 @@ class LockscreenWidgetService :
     // --- Tap to open ---
 
     /** The package of the visible row under the screen point, if any. */
-    private fun rowAt(rawX: Float, rawY: Float): String? {
+    private fun rowAt(
+        rawX: Float,
+        rawY: Float,
+    ): String? {
         val loc = IntArray(2)
         return rowViews.firstOrNull { row ->
             row.visibility == View.VISIBLE && run {
@@ -810,14 +865,22 @@ class LockscreenWidgetService :
             .maxWithOrNull(compareBy({ it.notification.`when` }, { it.postTime }))
         try {
             startActivity(NotificationOpenActivity.intent(this, pkg, latest?.key))
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
     }
 
     // --- Widget view ---
 
-    private fun buildWidget(rows: List<Pair<String, Int>>, total: Int): View? {
+    private fun buildWidget(
+        rows: List<Pair<String, Int>>,
+        total: Int,
+    ): View? {
         val ink = if (prefs.darkMode) Color.WHITE else Color.BLACK
-        val lato = try { ResourcesCompat.getFont(this, R.font.lato) } catch (_: Exception) { null }
+        val lato = try {
+            ResourcesCompat.getFont(this, R.font.lato)
+        } catch (_: Exception) {
+            null
+        }
 
         // Transparent column: the island box on top, the resize cue below it (outside the box).
         val root = LinearLayout(this).apply {
@@ -846,40 +909,52 @@ class LockscreenWidgetService :
                 tag = pkg // read back by rowAt() on tap
             }
             iconBitmap(pkg, iconSize, ink)?.let { bmp ->
-                row.addView(ImageView(this).apply {
-                    setImageBitmap(bmp)
-                }, LinearLayout.LayoutParams(iconSize, iconSize))
+                row.addView(
+                    ImageView(this).apply {
+                        setImageBitmap(bmp)
+                    },
+                    LinearLayout.LayoutParams(iconSize, iconSize),
+                )
             }
-            row.addView(TextView(this).apply {
-                text = count.toString()
-                typeface = Typeface.create(lato, Typeface.BOLD)
-                textSize = 18f
-                setTextColor(ink)
-            }, LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-            ).apply {
-                marginStart = dp(10f)
-            })
-            row.addView(TextView(this).apply {
-                text = label
-                typeface = lato
-                textSize = 18f
-                setTextColor(ink)
-                maxLines = 1
-                ellipsize = TextUtils.TruncateAt.END
-            }, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply {
-                marginStart = dp(8f)
-            })
+            row.addView(
+                TextView(this).apply {
+                    text = count.toString()
+                    typeface = Typeface.create(lato, Typeface.BOLD)
+                    textSize = 18f
+                    setTextColor(ink)
+                },
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                ).apply {
+                    marginStart = dp(10f)
+                },
+            )
+            row.addView(
+                TextView(this).apply {
+                    text = label
+                    typeface = lato
+                    textSize = 18f
+                    setTextColor(ink)
+                    maxLines = 1
+                    ellipsize = TextUtils.TruncateAt.END
+                },
+                LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply {
+                    marginStart = dp(8f)
+                },
+            )
             container.addView(row)
             builtRows.add(row)
         }
         if (builtRows.isEmpty()) return null
 
-        island.addView(container, FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.MATCH_PARENT,
-            FrameLayout.LayoutParams.WRAP_CONTENT,
-        ))
+        island.addView(
+            container,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+            ),
+        )
 
         // "+N" overflow badge pinned to the widget's top-right corner.
         val overflow = TextView(this).apply {
@@ -893,16 +968,22 @@ class LockscreenWidgetService :
             }
             setPadding(dp(8f), dp(2f), dp(8f), dp(2f))
         }
-        island.addView(overflow, FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.WRAP_CONTENT,
-            FrameLayout.LayoutParams.WRAP_CONTENT,
-            Gravity.TOP or Gravity.END,
-        ))
+        island.addView(
+            overflow,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                Gravity.TOP or Gravity.END,
+            ),
+        )
 
-        root.addView(island, LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-        ))
+        root.addView(
+            island,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+            ),
+        )
 
         // Resize cue below the box (outside it), visible only in edit mode.
         val handle = View(this).apply {
@@ -912,10 +993,13 @@ class LockscreenWidgetService :
             }
             visibility = View.GONE
         }
-        root.addView(handle, LinearLayout.LayoutParams(dp(48f), dp(5f)).apply {
-            gravity = Gravity.CENTER_HORIZONTAL
-            topMargin = dp(6f)
-        })
+        root.addView(
+            handle,
+            LinearLayout.LayoutParams(dp(48f), dp(5f)).apply {
+                gravity = Gravity.CENTER_HORIZONTAL
+                topMargin = dp(6f)
+            },
+        )
 
         islandView = island
         rowViews = builtRows
@@ -932,7 +1016,11 @@ class LockscreenWidgetService :
      * shape, the monochrome silhouette via the e-ink tint matrix, and an ink border with
      * an inset corner radius so the stroke stays concentric with the fill.
      */
-    private fun iconBitmap(pkg: String, sizePx: Int, ink: Int): Bitmap? {
+    private fun iconBitmap(
+        pkg: String,
+        sizePx: Int,
+        ink: Int,
+    ): Bitmap? {
         val src = IconUtility.loadIcon(this, pkg, "", sizePx) ?: return null
         val surface = if (prefs.darkMode) Color.BLACK else Color.WHITE
         val out = Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888)
@@ -944,9 +1032,14 @@ class LockscreenWidgetService :
         canvas.save()
         canvas.clipPath(shape)
         val matrix = if (prefs.darkMode) EinkTintMatrixDark.values else EinkTintMatrix.values
-        canvas.drawBitmap(src, null, RectF(0f, 0f, size, size), Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            colorFilter = ColorMatrixColorFilter(matrix)
-        })
+        canvas.drawBitmap(
+            src,
+            null,
+            RectF(0f, 0f, size, size),
+            Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                colorFilter = ColorMatrixColorFilter(matrix)
+            },
+        )
         canvas.restore()
         val strokeWidth = dp(2.5f).toFloat()
         val inset = strokeWidth / 2f
@@ -970,7 +1063,7 @@ class LockscreenWidgetService :
         labelCache[pkg]?.let { return it }
         return try {
             val label = packageManager.getApplicationLabel(
-                packageManager.getApplicationInfo(pkg, 0)
+                packageManager.getApplicationInfo(pkg, 0),
             ).toString()
             labelCache[pkg] = label
             label

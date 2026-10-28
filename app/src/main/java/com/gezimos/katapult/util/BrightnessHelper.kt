@@ -4,14 +4,16 @@ import android.content.Context
 import android.provider.Settings
 
 object BrightnessHelper {
-
-    fun toggleBrightness(context: Context, prefs: PrefsManager) {
+    fun toggleBrightness(
+        context: Context,
+        prefs: PrefsManager,
+    ) {
         if (!Settings.System.canWrite(context)) {
             context.startActivity(
                 android.content.Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
                     data = android.net.Uri.parse("package:${context.packageName}")
                     addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-                }
+                },
             )
             return
         }
@@ -19,7 +21,7 @@ object BrightnessHelper {
         val current = Settings.System.getInt(
             context.contentResolver,
             Settings.System.SCREEN_BRIGHTNESS,
-            128
+            128,
         )
 
         if (current > 1) {

@@ -4,7 +4,7 @@
   <CurrentIssues>
     <ID>ComplexCondition:AppContextMenu.kt$!viewModel.showRenameDialog &amp;&amp; !viewModel.reorderMode &amp;&amp; changeIconApp == null &amp;&amp; shortcutsApp == null</ID>
     <ID>ComplexCondition:HomeScreen.kt$!pinchFired &amp;&amp; viewModel.prefs.screensaverEnabled &amp;&amp; pinchStart &gt; 80.dp.toPx() &amp;&amp; distance &lt; pinchStart * 0.6f</ID>
-    <ID>CyclomaticComplexMethod:AllAppsScreen.kt$@OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class) @Composable fun AllAppsScreen(viewModel: MainViewModel, iconPicker: ActivityResultLauncher&lt;Array&lt;String&gt;&gt;)</ID>
+    <ID>CyclomaticComplexMethod:AllAppsScreen.kt$@OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class) @Composable fun AllAppsScreen( viewModel: MainViewModel, iconPicker: ActivityResultLauncher&lt;Array&lt;String&gt;&gt;, )</ID>
     <ID>CyclomaticComplexMethod:App.kt$@Composable fun App( viewModel: MainViewModel, imagePicker: ActivityResultLauncher&lt;String&gt;, iconPicker: ActivityResultLauncher&lt;Array&lt;String&gt;&gt;, )</ID>
     <ID>CyclomaticComplexMethod:AppContextMenu.kt$@Composable fun AppContextMenu( viewModel: MainViewModel, app: AppModel, iconPicker: ActivityResultLauncher&lt;Array&lt;String&gt;&gt;, showReorder: Boolean, showHide: Boolean, onDismiss: () -&gt; Unit, )</ID>
     <ID>CyclomaticComplexMethod:AppContextMenu.kt$@Composable private fun AppShortcutsDialog( viewModel: MainViewModel, app: AppModel, onDismiss: () -&gt; Unit, )</ID>
@@ -12,10 +12,10 @@
     <ID>CyclomaticComplexMethod:ClockDisplay.kt$@OptIn(ExperimentalFoundationApi::class) @Composable fun ColumnScope.ClockDisplay( clockTime: String, clockAmPm: String?, clockDate: String, alarmTime: String?, batteryPercent: Int, isCharging: Boolean, showBattery: Boolean, showAlarm: Boolean = true, weather: WeatherHelper.Weather? = null, islandsActive: Boolean, onClockClick: (() -&gt; Unit)? = null, onClockLongClick: (() -&gt; Unit)? = null, onDateClick: (() -&gt; Unit)? = null, onDateLongClick: (() -&gt; Unit)? = null, onBatteryClick: (() -&gt; Unit)? = null, onWeatherClick: (() -&gt; Unit)? = null, topSpacing: Dp = 32.dp, )</ID>
     <ID>CyclomaticComplexMethod:HomeScreen.kt$@Composable private fun AppPickerDialog( viewModel: MainViewModel, title: String, onDismiss: () -&gt; Unit, onSelected: (com.gezimos.katapult.model.AppModel) -&gt; Unit, )</ID>
     <ID>CyclomaticComplexMethod:HomeScreen.kt$@OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class) @Composable fun HomeScreen( viewModel: MainViewModel, imagePicker: ActivityResultLauncher&lt;String&gt;, iconPicker: ActivityResultLauncher&lt;Array&lt;String&gt;&gt;, )</ID>
-    <ID>CyclomaticComplexMethod:IconUtility.kt$IconUtility$fun loadIcon(context: Context, packageName: String, activityClass: String, sizePx: Int): Bitmap?</ID>
-    <ID>CyclomaticComplexMethod:IconUtility.kt$IconUtility$fun loadShortcutIcon(context: Context, packageName: String, shortcutId: String, sizePx: Int): Bitmap?</ID>
-    <ID>CyclomaticComplexMethod:LockscreenWidgetService.kt$LockscreenWidgetService$private fun attachGestures(view: View, params: WindowManager.LayoutParams)</ID>
-    <ID>CyclomaticComplexMethod:LockscreenWidgetService.kt$LockscreenWidgetService$private fun buildWidget(rows: List&lt;Pair&lt;String, Int&gt;&gt;, total: Int): View?</ID>
+    <ID>CyclomaticComplexMethod:IconUtility.kt$IconUtility$fun loadIcon( context: Context, packageName: String, activityClass: String, sizePx: Int, ): Bitmap?</ID>
+    <ID>CyclomaticComplexMethod:IconUtility.kt$IconUtility$fun loadShortcutIcon( context: Context, packageName: String, shortcutId: String, sizePx: Int, ): Bitmap?</ID>
+    <ID>CyclomaticComplexMethod:LockscreenWidgetService.kt$LockscreenWidgetService$private fun attachGestures( view: View, params: WindowManager.LayoutParams, )</ID>
+    <ID>CyclomaticComplexMethod:LockscreenWidgetService.kt$LockscreenWidgetService$private fun buildWidget( rows: List&lt;Pair&lt;String, Int&gt;&gt;, total: Int, ): View?</ID>
     <ID>CyclomaticComplexMethod:OnboardingScreen.kt$@Composable fun OnboardingScreen(viewModel: MainViewModel)</ID>
     <ID>CyclomaticComplexMethod:PrefsManager.kt$PrefsManager$fun importFromJson(text: String): Boolean</ID>
     <ID>CyclomaticComplexMethod:ScreensaverView.kt$@Composable fun ScreensaverView()</ID>
@@ -23,34 +23,36 @@
     <ID>CyclomaticComplexMethod:SettingsScreen.kt$@Composable fun SettingsScreen(viewModel: MainViewModel)</ID>
     <ID>CyclomaticComplexMethod:SettingsScreen.kt$@Composable private fun LockscreenAppsDialog( viewModel: MainViewModel, onDismiss: () -&gt; Unit, )</ID>
     <ID>CyclomaticComplexMethod:SettingsScreen.kt$@Composable private fun UpdateDialog( viewModel: MainViewModel, currentVersion: String, onDismiss: () -&gt; Unit, )</ID>
-    <ID>CyclomaticComplexMethod:SvgRasterizer.kt$SvgRasterizer$fun rasterize(input: InputStream, sizePx: Int): Bitmap?</ID>
+    <ID>CyclomaticComplexMethod:SvgRasterizer.kt$SvgRasterizer$fun rasterize( input: InputStream, sizePx: Int, ): Bitmap?</ID>
     <ID>EmptyFunctionBlock:BottomSheet.kt$BottomSheetDialog${}</ID>
     <ID>EmptyFunctionBlock:LockscreenWidgetService.kt$LockscreenWidgetService${}</ID>
     <ID>InvalidRange:SettingsScreen.kt$0 until 0</ID>
     <ID>LargeClass:LockscreenWidgetService.kt$LockscreenWidgetService : AccessibilityServiceLifecycleOwnerViewModelStoreOwnerSavedStateRegistryOwner</ID>
     <ID>LargeClass:MainViewModel.kt$MainViewModel : AndroidViewModel</ID>
-    <ID>LongMethod:AllAppsScreen.kt$@Composable private fun PageNavRow(viewModel: MainViewModel, wrap: Boolean, onResetOrder: () -&gt; Unit)</ID>
-    <ID>LongMethod:AllAppsScreen.kt$@OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class) @Composable fun AllAppsScreen(viewModel: MainViewModel, iconPicker: ActivityResultLauncher&lt;Array&lt;String&gt;&gt;)</ID>
+    <ID>LongMethod:AllAppsScreen.kt$@Composable private fun PageNavRow( viewModel: MainViewModel, wrap: Boolean, onResetOrder: () -&gt; Unit, )</ID>
+    <ID>LongMethod:AllAppsScreen.kt$@OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class) @Composable fun AllAppsScreen( viewModel: MainViewModel, iconPicker: ActivityResultLauncher&lt;Array&lt;String&gt;&gt;, )</ID>
     <ID>LongMethod:AppContextMenu.kt$@Composable fun AppContextMenu( viewModel: MainViewModel, app: AppModel, iconPicker: ActivityResultLauncher&lt;Array&lt;String&gt;&gt;, showReorder: Boolean, showHide: Boolean, onDismiss: () -&gt; Unit, )</ID>
     <ID>LongMethod:AppContextMenu.kt$@Composable private fun AppShortcutsDialog( viewModel: MainViewModel, app: AppModel, onDismiss: () -&gt; Unit, )</ID>
     <ID>LongMethod:AppContextMenu.kt$@Composable private fun RenameDialog( currentName: String, onDismiss: () -&gt; Unit, onConfirm: (String) -&gt; Unit, )</ID>
     <ID>LongMethod:AppContextMenu.kt$@OptIn(ExperimentalFoundationApi::class) @Composable private fun ChangeIconDialog( viewModel: MainViewModel, app: AppModel, onDismiss: () -&gt; Unit, onImportClick: () -&gt; Unit, )</ID>
     <ID>LongMethod:BottomSheet.kt$@Composable fun BottomSheet( onDismiss: () -&gt; Unit, imePadding: Boolean = false, content: @Composable ColumnScope.() -&gt; Unit, )</ID>
     <ID>LongMethod:ClockDisplay.kt$@OptIn(ExperimentalFoundationApi::class) @Composable fun ColumnScope.ClockDisplay( clockTime: String, clockAmPm: String?, clockDate: String, alarmTime: String?, batteryPercent: Int, isCharging: Boolean, showBattery: Boolean, showAlarm: Boolean = true, weather: WeatherHelper.Weather? = null, islandsActive: Boolean, onClockClick: (() -&gt; Unit)? = null, onClockLongClick: (() -&gt; Unit)? = null, onDateClick: (() -&gt; Unit)? = null, onDateLongClick: (() -&gt; Unit)? = null, onBatteryClick: (() -&gt; Unit)? = null, onWeatherClick: (() -&gt; Unit)? = null, topSpacing: Dp = 32.dp, )</ID>
-    <ID>LongMethod:Components.kt$fun Modifier.dashedDotBorder(strokeWidth: Dp = 2.dp, isRounded: Boolean, outset: Dp = 0.dp, cornerRadius: Dp = 19.dp, color: Color = Color.Black): Modifier</ID>
+    <ID>LongMethod:Components.kt$fun Modifier.dashedDotBorder( strokeWidth: Dp = 2.dp, isRounded: Boolean, outset: Dp = 0.dp, cornerRadius: Dp = 19.dp, color: Color = Color.Black, ): Modifier</ID>
     <ID>LongMethod:HomeScreen.kt$@Composable internal fun MusicWidget( info: AudioWidgetHelper.MediaInfo, onOpenApp: () -&gt; Unit, onPrevious: () -&gt; Unit, onPlayPause: () -&gt; Unit, onNext: () -&gt; Unit, onStop: () -&gt; Unit, cornerRadius: Dp = 19.dp, borderWidth: Dp = 2.5.dp, )</ID>
     <ID>LongMethod:HomeScreen.kt$@Composable private fun AppPickerDialog( viewModel: MainViewModel, title: String, onDismiss: () -&gt; Unit, onSelected: (com.gezimos.katapult.model.AppModel) -&gt; Unit, )</ID>
+    <ID>LongMethod:HomeScreen.kt$@OptIn(ExperimentalFoundationApi::class) @Composable private fun ShortcutItem( viewModel: MainViewModel, slot: String, defaultLabel: String, refresh: Int, onClick: () -&gt; Unit, onLongClick: () -&gt; Unit, )</ID>
     <ID>LongMethod:HomeScreen.kt$@OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class) @Composable fun HomeScreen( viewModel: MainViewModel, imagePicker: ActivityResultLauncher&lt;String&gt;, iconPicker: ActivityResultLauncher&lt;Array&lt;String&gt;&gt;, )</ID>
-    <ID>LongMethod:LockscreenWidgetService.kt$LockscreenWidgetService$private fun attachGestures(view: View, params: WindowManager.LayoutParams)</ID>
-    <ID>LongMethod:LockscreenWidgetService.kt$LockscreenWidgetService$private fun buildWidget(rows: List&lt;Pair&lt;String, Int&gt;&gt;, total: Int): View?</ID>
+    <ID>LongMethod:LockscreenWidgetService.kt$LockscreenWidgetService$private fun applyMusicWidget(onLockscreen: Boolean)</ID>
+    <ID>LongMethod:LockscreenWidgetService.kt$LockscreenWidgetService$private fun attachGestures( view: View, params: WindowManager.LayoutParams, )</ID>
+    <ID>LongMethod:LockscreenWidgetService.kt$LockscreenWidgetService$private fun buildWidget( rows: List&lt;Pair&lt;String, Int&gt;&gt;, total: Int, ): View?</ID>
     <ID>LongMethod:OnboardingScreen.kt$@Composable fun OnboardingScreen(viewModel: MainViewModel)</ID>
     <ID>LongMethod:ScreensaverView.kt$@Composable fun ScreensaverView()</ID>
-    <ID>LongMethod:ScreensaverView.kt$@Composable private fun NotificationIsland(rows: List&lt;SsRow&gt;, overflow: Int)</ID>
+    <ID>LongMethod:ScreensaverView.kt$@Composable private fun NotificationIsland( rows: List&lt;SsRow&gt;, overflow: Int, )</ID>
     <ID>LongMethod:SettingsScreen.kt$@Composable fun HiddenAppsDialog( viewModel: MainViewModel, onDismiss: () -&gt; Unit, )</ID>
     <ID>LongMethod:SettingsScreen.kt$@Composable fun SettingsScreen(viewModel: MainViewModel)</ID>
     <ID>LongMethod:SettingsScreen.kt$@Composable private fun LockscreenAppsDialog( viewModel: MainViewModel, onDismiss: () -&gt; Unit, )</ID>
     <ID>LongMethod:SettingsScreen.kt$@Composable private fun UpdateDialog( viewModel: MainViewModel, currentVersion: String, onDismiss: () -&gt; Unit, )</ID>
-    <ID>LongMethod:SvgRasterizer.kt$SvgRasterizer$fun rasterize(input: InputStream, sizePx: Int): Bitmap?</ID>
+    <ID>LongMethod:SvgRasterizer.kt$SvgRasterizer$fun rasterize( input: InputStream, sizePx: Int, ): Bitmap?</ID>
     <ID>LongParameterList:AllAppsScreen.kt$( app: AppModel, notificationCount: Int, isHighlighted: Boolean = false, hideLabel: Boolean = false, refresh: Int = 0, onClick: () -&gt; Unit, onLongClick: () -&gt; Unit, )</ID>
     <ID>LongParameterList:AppContextMenu.kt$( viewModel: MainViewModel, app: AppModel, iconPicker: ActivityResultLauncher&lt;Array&lt;String&gt;&gt;, showReorder: Boolean, showHide: Boolean, onDismiss: () -&gt; Unit, )</ID>
     <ID>LongParameterList:ClockDisplay.kt$( clockTime: String, clockAmPm: String?, clockDate: String, alarmTime: String?, batteryPercent: Int, isCharging: Boolean, showBattery: Boolean, showAlarm: Boolean = true, weather: WeatherHelper.Weather? = null, islandsActive: Boolean, onClockClick: (() -&gt; Unit)? = null, onClockLongClick: (() -&gt; Unit)? = null, onDateClick: (() -&gt; Unit)? = null, onDateLongClick: (() -&gt; Unit)? = null, onBatteryClick: (() -&gt; Unit)? = null, onWeatherClick: (() -&gt; Unit)? = null, topSpacing: Dp = 32.dp, )</ID>
@@ -181,18 +183,16 @@
     <ID>MaxLineLength:App.kt$LocalInk provides if (dark) androidx.compose.ui.graphics.Color.White else androidx.compose.ui.graphics.Color.Black</ID>
     <ID>MaxLineLength:App.kt$LocalSurface provides if (dark) androidx.compose.ui.graphics.Color.Black else androidx.compose.ui.graphics.Color.White</ID>
     <ID>MaxLineLength:Components.kt$&lt;no name provided&gt;$override</ID>
-    <ID>MaxLineLength:Components.kt$fun</ID>
     <ID>MaxLineLength:DirectBadgeHelper.kt$DirectBadgeHelper$ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED</ID>
     <ID>MaxLineLength:DirectBadgeHelper.kt$DirectBadgeHelper$ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CALL_LOG) == PackageManager.PERMISSION_GRANTED</ID>
-    <ID>MaxLineLength:HomeScreen.kt$else</ID>
-    <ID>MaxLineLength:HomeScreen.kt$}</ID>
     <ID>MaxLineLength:LockscreenPrivacy.kt$LockscreenPrivacy$/** NotificationChannel.lockscreenVisibility when the user hasn't changed it (hidden NotificationManager.VISIBILITY_NO_OVERRIDE). */</ID>
     <ID>MaxLineLength:LockscreenPrivacy.kt$LockscreenPrivacy$device.keyguardDisabledFeatures and DevicePolicyManager.KEYGUARD_DISABLE_UNREDACTED_NOTIFICATIONS != 0 -&gt; Visibility.REDACT</ID>
     <ID>MaxLineLength:LockscreenPrivacyTest.kt$LockscreenPrivacyTest$Triple(open.copy(keyguardDisabledFeatures = KEYGUARD_DISABLE_SECURE_NOTIFICATIONS), VISIBILITY_PUBLIC to NO_OVERRIDE, HIDE)</ID>
-    <ID>MaxLineLength:LockscreenPrivacyTest.kt$LockscreenPrivacyTest$Triple(open.copy(keyguardDisabledFeatures = KEYGUARD_DISABLE_UNREDACTED_NOTIFICATIONS), VISIBILITY_PRIVATE to NO_OVERRIDE, REDACT)</ID>
     <ID>MaxLineLength:LockscreenPrivacyTest.kt$LockscreenPrivacyTest$assertEquals("$device vis=${vis.first} override=${vis.second}", expected, decide(device, vis.first, vis.second))</ID>
     <ID>MaxLineLength:LockscreenPrivacyTest.kt$LockscreenPrivacyTest$private val open = DeviceState(keyguardSecure = true, showOnLockscreen = true, allowPrivate = true, keyguardDisabledFeatures = 0)</ID>
     <ID>MaxLineLength:MainViewModel.kt$MainViewModel$isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL</ID>
+    <ID>MaxLineLength:MainViewModel.kt$MainViewModel$private fun resolveCategory(category: String): String?</ID>
+    <ID>MaxLineLength:NotificationListener.kt$NotificationListener$private fun isGroupSummary(sbn: StatusBarNotification): Boolean</ID>
     <ID>MaxLineLength:OnboardingScreen.kt$ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED</ID>
     <ID>MaxLineLength:OnboardingScreen.kt$ContextCompat.checkSelfPermission(context, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED</ID>
     <ID>MaxLineLength:SettingsScreen.kt$Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/gezimos/Katapult/blob/main/LICENSE"))</ID>
@@ -201,35 +201,31 @@
     <ID>MaxLineLength:SettingsScreen.kt$SettingsCategoryInfo(R.string.section_appearance, R.string.section_appearance, R.string.cat_appearance_sub, Icons.Rounded.Palette)</ID>
     <ID>MaxLineLength:SettingsScreen.kt$SettingsCategoryInfo(R.string.section_experimental, R.string.cat_lockscreen, R.string.cat_lockscreen_sub, Icons.Rounded.Lock)</ID>
     <ID>MaxLineLength:SettingsScreen.kt$SettingsCategoryInfo(R.string.section_gestures, R.string.section_gestures, R.string.cat_gestures_sub, Icons.Rounded.Gesture)</ID>
-    <ID>MaxLineLength:SettingsScreen.kt$SettingsCategoryInfo(R.string.section_notifications, R.string.section_notifications, R.string.cat_notifications_sub, Icons.Rounded.Notifications)</ID>
     <ID>MaxLineLength:SettingsScreen.kt$SettingsCategoryInfo(R.string.section_screensaver, R.string.screensaver, R.string.cat_screensaver_sub, Icons.Rounded.Bedtime)</ID>
-    <ID>MaxLineLength:SettingsScreen.kt$description = if (roundedIcons) stringResource(R.string.icon_shape_rounded) else stringResource(R.string.icon_shape_circle)</ID>
     <ID>MaxLineLength:SettingsScreen.kt$text = if (hiddenCount &gt; 0) stringResource(R.string.hidden_apps_count, hiddenCount) else stringResource(R.string.hidden_apps)</ID>
     <ID>NestedBlockDepth:AppLoader.kt$AppLoader$private fun getBlacklist(context: Context): Set&lt;String&gt;</ID>
-    <ID>NestedBlockDepth:IconUtility.kt$IconUtility$fun loadIcon(context: Context, packageName: String, activityClass: String, sizePx: Int): Bitmap?</ID>
-    <ID>NestedBlockDepth:IconUtility.kt$IconUtility$private fun extractMonochromeFromManifest(context: Context, packageName: String): Drawable?</ID>
-    <ID>NestedBlockDepth:SvgRasterizer.kt$SvgRasterizer$fun rasterize(input: InputStream, sizePx: Int): Bitmap?</ID>
+    <ID>NestedBlockDepth:IconUtility.kt$IconUtility$fun loadIcon( context: Context, packageName: String, activityClass: String, sizePx: Int, ): Bitmap?</ID>
+    <ID>NestedBlockDepth:IconUtility.kt$IconUtility$private fun extractMonochromeFromManifest( context: Context, packageName: String, ): Drawable?</ID>
+    <ID>NestedBlockDepth:SvgRasterizer.kt$SvgRasterizer$fun rasterize( input: InputStream, sizePx: Int, ): Bitmap?</ID>
     <ID>NestedBlockDepth:WeatherHelper.kt$WeatherHelper$fun read(context: Context): Weather?</ID>
-    <ID>NewLineAtEndOfFile:AppContextMenu.kt$com.gezimos.katapult.ui.AppContextMenu.kt</ID>
-    <ID>NewLineAtEndOfFile:ExampleUnitTest.kt$com.gezimos.katapult.ExampleUnitTest.kt</ID>
-    <ID>ReturnCount:BitmapHelper.kt$BitmapHelper$fun decodeFile(path: String, maxSide: Int): Bitmap?</ID>
-    <ID>ReturnCount:IconUtility.kt$IconUtility$fun loadIcon(context: Context, packageName: String, activityClass: String, sizePx: Int): Bitmap?</ID>
-    <ID>ReturnCount:IconUtility.kt$IconUtility$fun loadShortcutIcon(context: Context, packageName: String, shortcutId: String, sizePx: Int): Bitmap?</ID>
-    <ID>ReturnCount:IconUtility.kt$IconUtility$private fun loadOverrideBitmap(context: Context, override: String, sizePx: Int): Bitmap?</ID>
-    <ID>ReturnCount:LockscreenPrivacy.kt$LockscreenPrivacy$fun decide(device: DeviceState, notificationVisibility: Int, channelOverride: Int): Visibility</ID>
+    <ID>ReturnCount:BitmapHelper.kt$BitmapHelper$fun decodeFile( path: String, maxSide: Int, ): Bitmap?</ID>
+    <ID>ReturnCount:IconUtility.kt$IconUtility$fun loadIcon( context: Context, packageName: String, activityClass: String, sizePx: Int, ): Bitmap?</ID>
+    <ID>ReturnCount:IconUtility.kt$IconUtility$fun loadShortcutIcon( context: Context, packageName: String, shortcutId: String, sizePx: Int, ): Bitmap?</ID>
+    <ID>ReturnCount:IconUtility.kt$IconUtility$private fun loadOverrideBitmap( context: Context, override: String, sizePx: Int, ): Bitmap?</ID>
+    <ID>ReturnCount:LockscreenPrivacy.kt$LockscreenPrivacy$fun decide( device: DeviceState, notificationVisibility: Int, channelOverride: Int, ): Visibility</ID>
     <ID>ReturnCount:LockscreenWidgetService.kt$LockscreenWidgetService$fun applyClockCover(show: Boolean)</ID>
     <ID>ReturnCount:LockscreenWidgetService.kt$LockscreenWidgetService$private fun appLabel(pkg: String): String?</ID>
     <ID>ReturnCount:LockscreenWidgetService.kt$LockscreenWidgetService$private fun applyMusicWidget(onLockscreen: Boolean)</ID>
     <ID>ReturnCount:LockscreenWidgetService.kt$LockscreenWidgetService$private fun evaluate()</ID>
     <ID>ReturnCount:LockscreenWidgetService.kt$LockscreenWidgetService$private fun maybeStartScreensaver()</ID>
-    <ID>ReturnCount:MainViewModel.kt$MainViewModel$fun getShortcutLabel(slot: String, defaultLabel: String): String</ID>
+    <ID>ReturnCount:MainViewModel.kt$MainViewModel$fun getShortcutLabel( slot: String, defaultLabel: String, ): String</ID>
     <ID>ReturnCount:MainViewModel.kt$MainViewModel$fun goBack(): Boolean</ID>
     <ID>ReturnCount:NotificationListener.kt$NotificationListener$private fun isListable(sbn: StatusBarNotification): Boolean</ID>
     <ID>ReturnCount:NotificationListener.kt$NotificationListener.Companion$fun cancelFor(packageName: String)</ID>
     <ID>ReturnCount:PinShortcutActivity.kt$PinShortcutActivity$private fun handlePinRequest(intent: Intent?)</ID>
     <ID>ReturnCount:PrefsManager.kt$PrefsManager$fun importFromJson(text: String): Boolean</ID>
     <ID>ReturnCount:PrefsManager.kt$PrefsManager$fun loadShortcut(slot: String): Pair&lt;String, String&gt;?</ID>
-    <ID>ReturnCount:SvgRasterizer.kt$SvgRasterizer$fun rasterize(input: InputStream, sizePx: Int): Bitmap?</ID>
+    <ID>ReturnCount:SvgRasterizer.kt$SvgRasterizer$fun rasterize( input: InputStream, sizePx: Int, ): Bitmap?</ID>
     <ID>TooGenericExceptionCaught:EinkHelper.kt$EinkHelper$e: Exception</ID>
     <ID>TooManyFunctions:AudioWidgetHelper.kt$AudioWidgetHelper</ID>
     <ID>TooManyFunctions:DirectBadgeHelper.kt$DirectBadgeHelper</ID>
@@ -240,6 +236,5 @@
     <ID>TooManyFunctions:SettingsScreen.kt$com.gezimos.katapult.ui.SettingsScreen.kt</ID>
     <ID>UnusedParameter:MainViewModel.kt$MainViewModel$context: Context</ID>
     <ID>UnusedPrivateMember:SettingsScreen.kt$@Composable private fun SettingsButtonRow( title: String, description: String, buttonText: String, onClick: () -&gt; Unit, )</ID>
-    <ID>WildcardImport:ExampleUnitTest.kt$import org.junit.Assert.*</ID>
   </CurrentIssues>
 </SmellBaseline>
