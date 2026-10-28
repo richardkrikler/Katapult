@@ -1,0 +1,17 @@
+# Keeps the SHA-pinned actions and the Gradle dependencies current.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+
+  # Version catalog, plugins and the Gradle wrapper. One grouped PR, so AGP,
+  # Kotlin and Compose land together instead of half-bumped.
+  - package-ecosystem: gradle
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      gradle:
+        patterns: ['*']
