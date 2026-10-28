@@ -1,12 +1,10 @@
 <div align="center">
 	<img src="docs/img/katapult_w.svg" alt="Katapult logo" height="48">
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<a href="https://buymeacoffee.com/gezimos"><img src="docs/img/bmc-button.png" alt="Buy me a coffee" height="48"></a>
 	<h2>Katapult — A simple grid launcher for Mudita Kompakt</h2>
 </div>
 
 > [!NOTE]
-> To install, download the latest APK from [Releases](https://github.com/gezimos/Katapult/releases) and install it on your device using Mudita Center or ADB/webADB.
+> To install, download the latest APK from [Releases](https://github.com/richardkrikler/Katapult/releases) and install it on your device using Mudita Center or ADB/webADB.
 
 <div align="center">
     <table>
@@ -91,13 +89,10 @@ Check the Notification Log. If Android doesn't clear it, Katapult can't either.
 ### How to disable notification dots for a specific app
 There are no allowlists. Go to Settings > App Notifications, tap the app, and disable "Allow notification dot".
 
-## Support the project
-
-<table><tr>
-<td><a href="https://buymeacoffee.com/gezimos"><img src="docs/img/bmc-button.png" alt="Buy me a coffee" height="40" style="max-width:200px;"></a></td>
-<td valign="middle">Katapult is free, open source, and ad-free forever. If it's made your phone better, consider supporting development.</td>
-</tr></table>
-
 ## Acknowledgments
 
 - The experimental lockscreen widget's approach — drawing over the keyguard through an accessibility overlay — was inspired by [Lockscreen Widgets](https://github.com/zacharee/LockscreenWidgets) by Zachary Wander. Katapult's implementation is its own; no code was copied.
+
+## Appreciation
+
+This project builds on [Katapult](https://github.com/gezimos/Katapult) by Gezim, who created the launcher and its design. Thank you for the original work and for releasing it as open source.
