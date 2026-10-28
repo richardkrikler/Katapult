@@ -1,0 +1,4 @@
+# Overrides on top of detekt's defaults (buildUponDefaultConfig).
+naming:
+  FunctionNaming:
+    ignoreAnnotated: ['Composable']

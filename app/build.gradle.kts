@@ -1,6 +1,14 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.detekt)
+}
+
+detekt {
+    buildUponDefaultConfig = true
+    config.setFrom(rootProject.file("config/detekt.yml"))
+    // Existing findings; CI fails only on new ones. Regenerate: ./gradlew detektBaseline
+    baseline = rootProject.file("config/detekt-baseline.xml")
 }
 
 base {
