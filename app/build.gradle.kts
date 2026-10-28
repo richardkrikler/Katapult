@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.ktlint)
 }
 
 detekt {
@@ -15,12 +16,17 @@ base {
     archivesName.set("katapult-v1.6")
 }
 
+ktlint {
+    version.set(libs.versions.ktlint.get())
+}
+
 android {
     namespace = "com.gezimos.katapult"
     compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
+        version =
+            release(36) {
+                minorApiLevel = 1
+            }
     }
 
     defaultConfig {
@@ -34,8 +40,11 @@ android {
 
         // The repo whose releases the in-app updater follows: the one CI built from, so a
         // fork's builds update from the fork (it signs with its own key).
-        buildConfigField("String", "RELEASES_REPO",
-            "\"${System.getenv("GITHUB_REPOSITORY") ?: "richardkrikler/Katapult"}\"")
+        buildConfigField(
+            "String",
+            "RELEASES_REPO",
+            "\"${System.getenv("GITHUB_REPOSITORY") ?: "richardkrikler/Katapult"}\"",
+        )
     }
 
     signingConfigs {
@@ -61,7 +70,7 @@ android {
             signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
