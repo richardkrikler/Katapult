@@ -27,7 +27,7 @@ android {
         // The repo whose releases the in-app updater follows: the one CI built from, so a
         // fork's builds update from the fork (it signs with its own key).
         buildConfigField("String", "RELEASES_REPO",
-            "\"${System.getenv("GITHUB_REPOSITORY") ?: "gezimos/Katapult"}\"")
+            "\"${System.getenv("GITHUB_REPOSITORY") ?: "richardkrikler/Katapult"}\"")
     }
 
     signingConfigs {
