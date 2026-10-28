@@ -82,6 +82,10 @@ android {
         compose = true
         buildConfig = true
     }
+    lint {
+        // Built for the Mudita Kompakt, a phone; ChromeOS compatibility doesn't apply.
+        disable += "PermissionImpliesUnsupportedChromeOsHardware"
+    }
 }
 
 dependencies {
