@@ -48,7 +48,7 @@
 
         <activity
             android:name=".ScreensaverLaunchActivity"
-            android:exported="true"
+            android:exported="false"
             android:excludeFromRecents="true"
             android:autoRemoveFromRecents="true"
             android:taskAffinity=""
@@ -90,7 +90,7 @@
 
         <activity
             android:name=".lockscreen.ScreensaverActivity"
-            android:exported="true"
+            android:exported="false"
             android:excludeFromRecents="true"
             android:screenOrientation="nosensor"
             android:theme="@style/Theme.Katapult" />
