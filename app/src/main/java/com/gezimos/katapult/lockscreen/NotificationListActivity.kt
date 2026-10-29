@@ -11,6 +11,8 @@ import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,8 +30,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.gestures.awaitEachGesture
-import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -216,7 +216,15 @@ private fun NotificationRow(
         Column(Modifier.weight(1f)) {
             Text("$app · $time", color = ink, fontFamily = LatoFamily, fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
             if (title.isNotEmpty()) {
-                Text(title, color = ink, fontFamily = LatoFamily, fontWeight = FontWeight.Bold, fontSize = 17.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(
+                    title,
+                    color = ink,
+                    fontFamily = LatoFamily,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 17.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
             }
             if (text.isNotEmpty()) {
                 Text(text, color = ink, fontFamily = LatoFamily, fontSize = 15.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
