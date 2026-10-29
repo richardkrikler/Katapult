@@ -45,6 +45,10 @@ android {
             "RELEASES_REPO",
             "\"${System.getenv("GITHUB_REPOSITORY") ?: "richardkrikler/Katapult"}\"",
         )
+
+        // Release CI sets these from the tag, so the values above stay upstream's.
+        System.getenv("VERSION_NAME")?.let { versionName = it }
+        System.getenv("VERSION_CODE")?.let { versionCode = it.toInt() }
     }
 
     signingConfigs {

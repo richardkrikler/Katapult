@@ -27,16 +27,12 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4
 
-      # The tag is the version (v1.6-rk.1 -> 1.6-rk.1). Stamped here only, so upstream
-      # version bumps never conflict when syncing. versionCode stays above upstream's.
-      - name: Stamp version
-        id: version
+      # The tag is the version (v1.6-rk.1 -> 1.6-rk.1), passed to Gradle as env vars so
+      # upstream version bumps never conflict when syncing. versionCode stays above upstream's.
+      - name: Set version
         run: |
-          ver="${GITHUB_REF_NAME#v}"
-          sed -i "s/^\( *versionName = \)\".*\"$/\1\"$ver\"/" app/build.gradle.kts
-          sed -i "s/^\( *versionCode = \).*$/\1$((1000 + ${{ github.run_number }}))/" app/build.gradle.kts
-          grep -q "versionName = \"$ver\"" app/build.gradle.kts
-          echo "version=$ver" >> "$GITHUB_OUTPUT"
+          echo "VERSION_NAME=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+          echo "VERSION_CODE=$((1000 + GITHUB_RUN_NUMBER))" >> "$GITHUB_ENV"
 
       # Without the keystore Gradle still builds, just unsigned, which nothing can install.
       - name: Decode keystore
@@ -54,12 +50,12 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           ./gradlew testDebugUnitTest assembleRelease
-          mv app/build/outputs/apk/release/*.apk "katapult-v${{ steps.version.outputs.version }}.apk"
+          mv app/build/outputs/apk/release/*.apk "katapult-v$VERSION_NAME.apk"
 
       # The matching "## [x]" section of CHANGELOG.md; GitHub's generated notes follow it.
       - name: Release notes
         run: |
-          awk -v v="${{ steps.version.outputs.version }}" '
+          awk -v v="$VERSION_NAME" '
             $0 == "## [" v "]" { on = 1; next }
             /^## \[/ { on = 0 }
             on' CHANGELOG.md > notes.md
