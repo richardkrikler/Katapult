@@ -2,12 +2,13 @@
 
 All notable changes to Katapult are documented here.
 
-## [Unreleased]
+## [1.6-rk.2]
 
 ### Added
 - **Notification list**: swipe down from the status bar, from any app, to open a list of your notifications instead of MuditaOS's quick settings (they have a hardware button). Tap a notification to open it, long-press to clear it, swipe up to close. Needs the Action Service. MuditaOS still opens its panel for a moment before Katapult closes it again.
 
 ### Changed
+- Other apps can no longer open the screensaver directly. The Screensaver shortcut and icon still work.
 - **About** links to this fork's GitHub for source code, issues and updates, credits Gezim's original Katapult, and keeps a link to support him.
 
 ### Removed
