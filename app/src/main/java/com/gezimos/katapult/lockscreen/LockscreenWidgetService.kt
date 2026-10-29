@@ -90,11 +90,12 @@ import kotlin.math.roundToInt
  * A single tap on a row opens that app's latest notification via NotificationOpenActivity.
  *
  * The whole feature is contained here so it can be scrapped easily. To remove it, delete:
- * this package, the <service> and NotificationOpenActivity entries in AndroidManifest.xml,
+ * this package, the <service>, NotificationOpenActivity and NotificationListActivity entries in
+ * AndroidManifest.xml,
  * LockscreenPrivacyTest, res/xml/lockscreen_widget_service.xml,
  * the Experimental section in SettingsScreen (toggle + Lockscreen Notification Apps dialog),
- * the lockscreenWidget prefs in PrefsManager, the onCountsChangedExtra hook and the
- * activeFor/find/lockscreenVisibilityOverride/cancel helpers in NotificationListener,
+ * the lockscreenWidget prefs in PrefsManager, the onCountsChangedExtra/onCountsChangedList hooks and the
+ * find/lockscreenVisibilityOverride/cancel helpers in NotificationListener,
  * and the lockscreen_widget and section_experimental strings.
  */
 class LockscreenWidgetService :
@@ -170,6 +171,10 @@ class LockscreenWidgetService :
         private const val KEYGUARD_RECHECK_MS = 120L
         private const val KEYGUARD_BURST_MS = 2000L
         private const val KEYGUARD_IDLE_RECHECK_MS = 1000L
+        private const val PULL_THRESHOLD_DP = 24f
+        private const val SHADE_CHECK_MS = 50L
+        private const val SHADE_CHECKS = 20
+        private const val SYSTEMUI = "com.android.systemui"
 
         /** Whether the user has enabled this service in system accessibility settings. */
         fun isEnabled(context: Context): Boolean {
@@ -189,6 +194,7 @@ class LockscreenWidgetService :
     private var overlay: View? = null
     private var overlayParams: WindowManager.LayoutParams? = null
     private var clockCover: View? = null
+    private var pullCatcher: View? = null
     private var messageOverlay: View? = null
     private var shownRows: List<Pair<String, Int>> = emptyList()
     private var directBadges: DirectBadgeHelper? = null
@@ -307,6 +313,7 @@ class LockscreenWidgetService :
         }
         removeOverlay()
         removeClockCover()
+        removePullCatcher()
         super.onDestroy()
     }
 
@@ -512,6 +519,99 @@ class LockscreenWidgetService :
         messageOverlay = null
     }
 
+    /**
+     * Takes over the swipe down from the status bar: a touchable TYPE_ACCESSIBILITY_OVERLAY
+     * strip sits above SystemUI's status bar window, so the pull-down lands here instead of
+     * opening MuditaOS's quick settings (which have a hardware button anyway). Off on the
+     * keyguard, where SystemUI keeps its own behavior.
+     */
+    private fun applyPullCatcher(show: Boolean) {
+        if (show == (pullCatcher != null)) return
+        if (!show) return removePullCatcher()
+        val threshold = dp(PULL_THRESHOLD_DP)
+        val view = View(this)
+        var downY = 0f
+        var fired = false
+        view.setOnTouchListener { _, e ->
+            when (e.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    downY = e.rawY
+                    fired = false
+                }
+                MotionEvent.ACTION_MOVE, MotionEvent.ACTION_CANCEL -> if (!fired &&
+                    (e.actionMasked == MotionEvent.ACTION_CANCEL || e.rawY - downY > threshold)
+                ) {
+                    fired = true
+                    openNotificationList()
+                }
+            }
+            true
+        }
+        val params = WindowManager.LayoutParams().apply {
+            type = WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
+            format = PixelFormat.TRANSPARENT
+            flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+            width = WindowManager.LayoutParams.MATCH_PARENT
+            height = statusBarHeightPx()
+            gravity = Gravity.TOP
+        }
+        try {
+            getSystemService(WindowManager::class.java).addView(view, params)
+            pullCatcher = view
+        } catch (_: Exception) {
+            pullCatcher = null
+        }
+    }
+
+    private fun openNotificationList() {
+        closeSystemPanel(SHADE_CHECKS)
+    }
+
+    /**
+     * SystemUI pilfers the swipe a few pixels in and opens its own panel anyway: the shade on
+     * AOSP, a SYSTEM_DIALOG window with the quick settings on MuditaOS (which
+     * GLOBAL_ACTION_DISMISS_NOTIFICATION_SHADE doesn't close). Back closes both; sent only
+     * while SystemUI holds focus, so it can't close the list or the app underneath.
+     * The list starts only afterwards: it shares this main thread, and its first frame would
+     * hold up these checks (and keep the panel on screen) for a quarter of a second.
+     */
+    private fun closeSystemPanel(checksLeft: Int) {
+        mainHandler.postDelayed({
+            val front = try {
+                rootInActiveWindow?.packageName
+            } catch (_: Exception) {
+                null
+            }
+            if (front == SYSTEMUI) performGlobalAction(GLOBAL_ACTION_BACK)
+            if (front == SYSTEMUI || checksLeft <= 1) {
+                startNotificationList()
+            } else {
+                closeSystemPanel(checksLeft - 1)
+            }
+        }, SHADE_CHECK_MS)
+    }
+
+    private fun startNotificationList() {
+        try {
+            startActivity(
+                Intent(this, NotificationListActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION),
+            )
+        } catch (_: Exception) {
+        }
+    }
+
+    private fun removePullCatcher() {
+        pullCatcher?.let {
+            try {
+                getSystemService(WindowManager::class.java).removeView(it)
+            } catch (_: Exception) {
+            }
+        }
+        pullCatcher = null
+    }
+
     private fun removeClockCover() {
         clockCover?.let {
             try {
@@ -541,6 +641,7 @@ class LockscreenWidgetService :
             !ScreensaverActivity.isShowing &&
             !inCall() &&
             !pinShowing(SystemClock.elapsedRealtime() < burstUntil)
+        applyPullCatcher(!keyguard.isKeyguardLocked)
         applyMusicWidget(onLockscreen)
         applyLockscreenMessage(onLockscreen)
         if (!onLockscreen || !prefs.lockscreenWidget) {
@@ -854,7 +955,8 @@ class LockscreenWidgetService :
      */
     private fun openFromLockscreen(pkg: String) {
         val privacy = LockscreenPrivacy.read(this)
-        val latest = NotificationListener.activeFor(pkg)
+        val latest = NotificationListener.listAll()
+            .filter { it.packageName == pkg }
             .filter {
                 LockscreenPrivacy.decide(
                     privacy,

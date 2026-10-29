@@ -297,4 +297,7 @@
     <string name="gestures_readme_desc">About page navigation and swipe gestures</string>
     <string name="gestures_readme_nav">By default you navigate pages horizontally, or with the arrow buttons. You can change the gesture direction to vertical and hide the arrows if you prefer.</string>
     <string name="gestures_readme_apps">Swipe for All Apps lets you swipe up or left to open the All Apps page, depending on the gesture direction.</string>
+    <string name="notification_list_title">Notifications</string>
+    <string name="notification_list_clear_all">Clear all</string>
+    <string name="notification_list_empty">No notifications</string>
 </resources>

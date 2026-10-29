@@ -103,6 +103,14 @@
             android:taskAffinity=""
             android:theme="@style/Theme.Katapult.Unlock" />
 
+        <activity
+            android:name=".lockscreen.NotificationListActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:taskAffinity=""
+            android:theme="@style/Theme.Katapult.Unlock" />
+
         <service
             android:name=".lockscreen.KatapultDreamService"
             android:exported="true"

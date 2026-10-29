@@ -23,6 +23,7 @@ class NotificationListener : NotificationListenerService() {
         // Extra slots for the experimental lockscreen widget and screensaver (see .lockscreen package).
         var onCountsChangedExtra: (() -> Unit)? = null
         var onCountsChangedDream: (() -> Unit)? = null
+        var onCountsChangedList: (() -> Unit)? = null
         private val skipPackages = if (DeviceHelper.isMuditaKompakt()) DirectBadgeHelper.DIRECT_PACKAGES else emptySet()
 
         // System packages whose notifications are never user-relevant (USB mode,
@@ -40,6 +41,7 @@ class NotificationListener : NotificationListenerService() {
             onCountsChanged?.invoke()
             onCountsChangedExtra?.invoke()
             onCountsChangedDream?.invoke()
+            onCountsChangedList?.invoke()
         }
 
         @Volatile
@@ -53,14 +55,12 @@ class NotificationListener : NotificationListenerService() {
 
         fun getLastPostTimes(): Map<String, Long> = lastPostByPkg.toMap()
 
-        /**
-         * Live notifications for [packageName] the lockscreen widget can open. Queried on
-         * tap only, so no Notification objects are kept around between taps.
-         */
-        fun activeFor(packageName: String): List<StatusBarNotification> {
+        /** Live, openable notifications, newest first: the pull-down list and lockscreen widget taps. */
+        fun listAll(): List<StatusBarNotification> {
             val self = instance ?: return emptyList()
             return try {
-                self.activeNotifications.filter { it.packageName == packageName && self.isListable(it) }
+                // Notification.when, not postTime: some apps re-post old notifications.
+                self.activeNotifications.filter { self.isListable(it) }.sortedByDescending { it.notification.`when` }
             } catch (_: Exception) {
                 emptyList()
             }

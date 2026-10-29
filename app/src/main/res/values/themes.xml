@@ -8,8 +8,8 @@
         <item name="android:colorBackground">@color/white</item>
     </style>
 
-    <!-- NotificationOpenActivity is only on screen while the keyguard asks for the PIN, so it
-         shows no app icon splash. -->
+    <!-- No app icon splash: NotificationOpenActivity is only on screen while the keyguard asks
+         for the PIN, and NotificationListActivity should open like a shade. -->
     <style name="Theme.Katapult.Unlock">
         <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="31">@android:color/transparent</item>
     </style>
