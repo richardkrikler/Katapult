@@ -22,6 +22,10 @@ A fork of [Katapult](https://github.com/gezimos/Katapult) by Gezim, maintained a
             <td><img src='docs/img/screenshots/settings.png' height='300' alt=""></td>
             <td><img src='docs/img/screenshots/order_apps.png' height='300' alt=""></td>
         </tr>
+        <tr>
+            <td><img src='docs/img/screenshots/recent_apps.png' height='300' alt="Recent apps"></td>
+            <td><img src='docs/img/screenshots/notification_list.png' height='300' alt="Notification list"></td>
+        </tr>
     </table>
 </div>
 
@@ -31,39 +35,77 @@ A fork of [Katapult](https://github.com/gezimos/Katapult) by Gezim, maintained a
 - **Replace home apps**: Long-press on the Phone, SMS, or extra row shortcuts
 - **Clock/Date shortcut**: Long-press on the clock or date to assign an app
 
+## What this fork adds
+
+- **Recent apps**: swipe left to right on the home screen for a list of the apps you used since the phone started, newest first, with how long ago. Tap an app to return to it where you left it. Needs Usage Access.
+- **Notification list**: swipe down from the status bar, from any app, to see your notifications instead of MuditaOS's quick settings. Tap one to open it, long-press to clear it, swipe up to close. Needs the Action Service.
+- **Open notifications from the lock screen**: tap an app in the Lockscreen Notifications widget to unlock and open its newest notification. The Mudita Phone row opens the call log.
+- Notification counts no longer stay one too high when an app groups its notifications.
+- English only, and the update checker follows this fork's releases.
+
+See the [changelog](CHANGELOG.md) for details.
+
 ## Features
 
-- **3x4 app grid** tap on chevrons or use horizontal swipes
-- **Music widget** with playback controls and song info, works with other third-party apps like Auxio, Fossify Music, Spotify, Foobar, CalmCast, Antenna Pod etc.
-- **Icon tinting and shaping** for a uniform black & white look (works with ~95% of apps)
-- **Icon shape**: Circle or Rounded, affects all icons, buttons, and indicators
-- **Extra dock row**: 3 additional shortcuts above the Phone/SMS bar
-- **Notification indicators** on app icons (requires notification listener permission)
-- **Show battery %** with level-based icon above the clock.
-- **Show AM/PM** for 12-hour clocks
-- **Hide status bar** for a cleaner look
-- **E-Ink refresh on home**: flashes the screen when pressing the home button to clear ghosting
-- **Double-tap brightness**: toggle display brightness by double-tapping the home background (requires system settings permission)
-- **Infinite scroll**: wrap around from last page to first
-- **Simple wallpaper**: set a background image (not managed by Android)
-- **Hide apps**: from the app context menu or bulk-hide from the home menu
-- **Rename apps**: long-press any app in the grid
-- **App context menu**: Reorder, Rename, Hide, App Info, Uninstall
-- **Reorder apps**: swap-based reordering from the context menu, with reset to alphabetical option
-- **Lockscreen Notifications (experimental)**: per-app notification counts on the lock screen, with an app allowlist and sort order. Tap an app to open its newest notification (unlocks first). Long-press the widget to move/resize it, tap to save.
-- **Screensaver (experimental)**: a Katapult screen saver showing the home clock, date, alarm, battery, and up to 4 notification rows. Start it with a two-finger long-press on the home screen (or the home long-press menu); the power button exits. Select Katapult once in system Screen saver settings (Settings → Experimental → Screensaver opens it).
+### Home screen
+- **Clock and date**, with the next alarm, battery %, and weather (Kompakt only, from the Mudita weather app) above it. Clock and date formats are configurable.
+- **Dock** with Phone, SMS and the All Apps button, plus an optional **extra dock row** of 3 shortcuts. Any slot, the clock and the date can open an app or app shortcut.
+- **Music widget** with playback controls and song info, works with third-party players like Auxio, Fossify Music, Spotify, Foobar, CalmCast, AntennaPod.
+- **Long-press an app in home**: App Info, Context Menu, Clear Notifications, Edit Shortcut or Disabled.
+- **Double tap in home**: toggle brightness or lock the phone.
+- **Text Backgrounds**: islands behind the clock, date and apps.
+- **Hide All Apps Button**, Hide Status Bar, Hide Status Bar Clock (Kompakt only, covers the duplicate clock).
+
+### All Apps
+- **3x4 app grid**, paged with swipes or arrow buttons, horizontal or vertical, with optional infinite scroll.
+- **Order Apps**: alphabetical (with your manual reorder), most recent or most used.
+- **App context menu**: Reorder, Rename, Change Icon, App Shortcuts, Hide, App Info, Notifications, Clear Notifications, Uninstall.
+- **App Shortcuts**: enable the shortcuts an app publishes (a timer, a conversation) as their own tiles. Websites and PWAs added from the browser land here too.
+- **Hide apps** from the context menu, or in bulk from the home long-press menu.
+
+### Appearance
+- **Icon tinting and shaping** for a uniform black & white look (works with ~95% of apps). Monochrome icons are used when an app provides one.
+- **Change Icon**: bundled Katapult icons, 133 Material icons, or your own PNG/SVG.
+- **Icon Shape** (circle or rounded) and **Icon Size** (72 x 72 or 80 x 80).
+- **Theme Mode**: System, Light or Dark.
+- **Hide App Names**, and a simple wallpaper (not managed by Android).
+
+### Notifications
+- **Notification indicators** on app icons. On the Kompakt, Mudita Phone and Messages badges read the call log and SMS directly, including declined calls and voicemail.
+- **Notification list** from the status bar (see above).
+- **Lockscreen Notifications (experimental)**: per-app notification counts on the lock screen, with an app allowlist and sort order. Tap an app to open its newest notification. Long-press the widget to move or resize it, tap to save.
+- **Lockscreen Music Controls** (Kompakt only): controls on the lock screen for players other than Mudita's own.
+- **Lockscreen Message**: your own text at the bottom of the lock screen.
+
+### Screensaver (experimental)
+- An always-on style screen with the home clock, date, alarm, battery, weather and up to 4 notification rows, optionally over a wallpaper.
+- Start it with a pinch on home, from the home long-press menu, the Screensaver icon, or automatically on the power button.
+- Update Mode: Static, Auto or Timed. Select Katapult once in the system Screen saver settings (Settings → Screensaver opens it).
+
+### E-Ink
+- **E-Ink Refresh on Home**: flashes the screen when you press home, to clear ghosting.
+- **E-Ink Mode** (Kompakt only): Disabled, Clear, Contrast or Reading.
+
+### System
+- **Check for Updates**: downloads and installs new releases from GitHub.
+- **Config Export/Import** as JSON, and Clear All Data.
+- **Permissions** overview, Search Settings, Set as Default Launcher.
 
 ## Permissions
 
 | Permission | Why |
 |------------|-----|
 | `QUERY_ALL_PACKAGES` | List all installed apps |
+| `PACKAGE_USAGE_STATS` | Recent apps, and ordering apps by most recent or most used (Usage Access) |
 | `WRITE_SETTINGS` | Double-tap brightness toggle |
 | `REQUEST_DELETE_PACKAGES` | Uninstall apps from the context menu |
-| `BIND_NOTIFICATION_LISTENER_SERVICE` | Read notifications for badge counts |
-| `READ_CALL_LOG` | Missed call badge on Mudita Phone (Mudita Kompakt only) |
+| `REQUEST_INSTALL_PACKAGES` | Install updates from Check for Updates |
+| `INTERNET` | Check for Updates |
+| `BIND_NOTIFICATION_LISTENER_SERVICE` | Read notifications for badges, the notification list and the lock screen |
+| `READ_CALL_LOG`, `WRITE_CALL_LOG` | Missed call badge on Mudita Phone, and clearing it (Mudita Kompakt only) |
 | `READ_SMS` | Unread SMS badge on Mudita Messages (Mudita Kompakt only) |
-| `BIND_ACCESSIBILITY_SERVICE` | Draws the experimental lockscreen widget over the lock screen — an accessibility overlay is the only way a normal app can display there. The permission sounds scary, but Katapult reads only the lock screen itself — never your apps — so the widget can hide when the PIN screen appears. It records and shares nothing; this open source code is the proof. |
+| `com.mudita.weather.PERMISSION_READ_WEATHER_DATA` | Show Weather (Mudita Kompakt only) |
+| `BIND_ACCESSIBILITY_SERVICE` | The Katapult Action Service. Draws the experimental lockscreen widgets over the lock screen, since an accessibility overlay is the only way a normal app can display there. Also used for the notification list pull-down, the status bar clock cover, locking the phone and the screensaver on the power button. The permission sounds scary, but Katapult reads only the lock screen and the status bar, never your apps. It records and shares nothing; this open source code is the proof. |
 
 ## FAQ
 
@@ -78,7 +120,8 @@ A fork of [Katapult](https://github.com/gezimos/Katapult) by Gezim, maintained a
 | Can I change date/clock formats? | No. It follows Android settings. Change it there. |
 | Can I add AM/PM to a 12-hour clock? | Yes. It's in the settings. |
 | Can I reorder apps? | Yes. Long-press an app, tap Reorder, then tap another app to swap. Tap Save when done. |
-| Will this launcher have a notification tray or letters screen? | No. |
+| Will this launcher have a notification tray? | Yes, swipe down from the status bar (needs the Action Service). |
+| Will it have a letters screen? | No. |
 
 ## Troubleshooting
 
