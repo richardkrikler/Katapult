@@ -2,6 +2,7 @@ package com.gezimos.katapult
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.SystemClock
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
@@ -19,6 +20,7 @@ class MainActivity : ComponentActivity() {
     val viewModel: MainViewModel by viewModels()
 
     private var einkHelper: EinkHelper? = null
+    private var lastHomePress = 0L
 
     val imagePicker = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let { viewModel.setWallpaper(this, it) }
@@ -103,8 +105,12 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         overridePendingTransition(0, 0)
         viewModel.dismissAllSheets()
+        // A second home press soon after the first opens Recent apps.
+        val now = SystemClock.uptimeMillis()
+        val doublePress = intent.hasCategory(Intent.CATEGORY_HOME) && now - lastHomePress < DOUBLE_HOME_PRESS_MS
+        lastHomePress = if (doublePress) 0L else now
         if (viewModel.screen != Screen.ONBOARDING) {
-            viewModel.navigateTo(Screen.HOME)
+            viewModel.navigateTo(if (doublePress) Screen.RECENTS else Screen.HOME)
         }
 
         val savedMode = viewModel.prefs.einkHelperMode
@@ -117,3 +123,5 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+private const val DOUBLE_HOME_PRESS_MS = 500L

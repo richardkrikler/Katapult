@@ -37,7 +37,7 @@ A fork of [Katapult](https://github.com/gezimos/Katapult) by Gezim, maintained a
 
 ## What this fork adds
 
-- **Recent apps**: swipe left to right on the home screen for a list of the apps you used since the phone started, newest first, with how long ago. Tap an app to return to it where you left it. Needs Usage Access.
+- **Recent apps**: swipe left to right on the home screen, or press the home button twice quickly, for a list of the apps you used since the phone started, newest first, with how long ago. Tap an app to return to it where you left it. Needs Usage Access.
 - **Notification list**: swipe down from the status bar, from any app, to see your notifications instead of MuditaOS's quick settings. Tap one to open it, long-press to clear it, swipe up to close. Needs the Action Service.
 - **Open notifications from the lock screen**: tap an app in the Lockscreen Notifications widget to unlock and open its newest notification. The Mudita Phone row opens the call log.
 - Notification counts no longer stay one too high when an app groups its notifications.
