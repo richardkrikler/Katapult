@@ -47,6 +47,8 @@ import kotlin.math.abs
 
 private val RecentRowHeight = 72.dp
 private val RecentIconSize = 48.dp
+private val PageRowBottomPadding = 16.dp
+private val PageRowHeight = ArrowSize + PageRowBottomPadding
 
 // Sits left of home; swipe right or the right arrow pages to older apps.
 @OptIn(ExperimentalLayoutApi::class)
@@ -55,9 +57,10 @@ fun RecentsScreen(viewModel: MainViewModel) {
     val context = LocalContext.current
     val hasPermission = remember { UsageHelper.hasPermission(context) }
     var page by remember { mutableIntStateOf(0) }
-    var totalPages by remember { mutableIntStateOf(1) }
 
-    Column(
+    // False positive: maxHeight is read below.
+    @Suppress("UnusedBoxWithConstraintsScope")
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
             .background(LocalSurface.current)
@@ -69,54 +72,52 @@ fun RecentsScreen(viewModel: MainViewModel) {
                 },
             )
             .windowInsetsPadding(WindowInsets.navigationBarsIgnoringVisibility)
-            .padding(PagePadding)
-            .horizontalSwipe { toRight ->
-                if (toRight) {
-                    if (page < totalPages - 1) page++
-                } else if (page > 0) {
-                    page--
-                } else {
-                    viewModel.navigateTo(Screen.HOME)
-                }
-            },
+            .padding(PagePadding),
     ) {
-        // False positive: maxHeight is read below.
-        @Suppress("UnusedBoxWithConstraintsScope")
-        BoxWithConstraints(
+        // Sized in one pass, so the page row never appears late and pushes a row to the next page.
+        val apps = viewModel.recentApps
+        val fits = (maxHeight / RecentRowHeight).toInt().coerceAtLeast(1)
+        val showPageRow = !viewModel.prefs.hideArrowButtons && apps.size > fits
+        val perPage = if (showPageRow) ((maxHeight - PageRowHeight) / RecentRowHeight).toInt().coerceAtLeast(1) else fits
+        val totalPages = ((apps.size + perPage - 1) / perPage).coerceAtLeast(1)
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
+                .fillMaxSize()
+                .horizontalSwipe(totalPages) { toRight ->
+                    if (toRight) {
+                        if (page < totalPages - 1) page++
+                    } else if (page > 0) {
+                        page--
+                    } else {
+                        viewModel.navigateTo(Screen.HOME)
+                    }
+                },
         ) {
-            val apps = viewModel.recentApps
-            val perPage = (maxHeight / RecentRowHeight).toInt().coerceAtLeast(1)
-            totalPages = ((apps.size + perPage - 1) / perPage).coerceAtLeast(1)
-            if (page >= totalPages) page = totalPages - 1
-            if (!hasPermission || apps.isEmpty()) {
-                RecentsEmpty(hasPermission)
-            } else {
-                Column(modifier = Modifier.fillMaxSize()) {
+            Column(Modifier.fillMaxWidth().weight(1f)) {
+                if (!hasPermission || apps.isEmpty()) {
+                    RecentsEmpty(hasPermission)
+                } else {
                     apps.drop(page * perPage).take(perPage).forEach { (app, lastUsed) ->
                         RecentRow(viewModel, app, lastUsed)
                     }
                 }
             }
-        }
-
-        if (!viewModel.prefs.hideArrowButtons && totalPages > 1) {
-            RecentsPageRow(page, totalPages) { page = it }
+            if (showPageRow) RecentsPageRow(page, totalPages) { page = it }
         }
     }
 }
 
-private fun Modifier.horizontalSwipe(onSwipe: (toRight: Boolean) -> Unit) =
-    pointerInput(Unit) {
-        var accumulated = 0f
-        detectHorizontalDragGestures(
-            onDragStart = { accumulated = 0f },
-            onDragEnd = { if (abs(accumulated) > 17.5.dp.toPx()) onSwipe(accumulated > 0) },
-            onHorizontalDrag = { _, dragAmount -> accumulated += dragAmount },
-        )
-    }
+private fun Modifier.horizontalSwipe(
+    key: Any,
+    onSwipe: (toRight: Boolean) -> Unit,
+) = pointerInput(key) {
+    var accumulated = 0f
+    detectHorizontalDragGestures(
+        onDragStart = { accumulated = 0f },
+        onDragEnd = { if (abs(accumulated) > 17.5.dp.toPx()) onSwipe(accumulated > 0) },
+        onHorizontalDrag = { _, dragAmount -> accumulated += dragAmount },
+    )
+}
 
 @Composable
 private fun RecentsEmpty(hasPermission: Boolean) {
@@ -162,7 +163,7 @@ private fun RecentsPageRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 8.dp, end = 8.dp, bottom = 16.dp),
+            .padding(start = 8.dp, end = 8.dp, bottom = PageRowBottomPadding),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // Arrows line up with the icon column and the right edge of RecentRow.
