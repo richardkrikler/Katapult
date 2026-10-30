@@ -42,6 +42,7 @@ fun App(
             Screen.ONBOARDING -> OnboardingScreen(viewModel)
             Screen.HOME -> HomeScreen(viewModel, imagePicker, iconPicker)
             Screen.ALL_APPS -> AllAppsScreen(viewModel, iconPicker)
+            Screen.RECENTS -> RecentsScreen(viewModel)
             Screen.SETTINGS -> SettingsScreen(viewModel)
         }
         com.gezimos.katapult.lockscreen.LockscreenReEnableSheet(viewModel)

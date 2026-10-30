@@ -51,7 +51,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-enum class Screen { ONBOARDING, HOME, ALL_APPS, SETTINGS }
+enum class Screen { ONBOARDING, HOME, ALL_APPS, RECENTS, SETTINGS }
 
 private val AM_PM_REGEX = Regex("\\s*[AaPp][Mm]\\s*")
 
@@ -80,6 +80,8 @@ class MainViewModel(
     var orderedApps by mutableStateOf(listOf<AppModel>())
         private set
     var currentPage by mutableIntStateOf(0)
+        private set
+    var recentApps by mutableStateOf(listOf<Pair<AppModel, Long>>())
         private set
     var clockTime by mutableStateOf("")
         private set
@@ -408,6 +410,7 @@ class MainViewModel(
     fun navigateTo(target: Screen) {
         if (reorderMode) finishReorder()
         if (target == Screen.ALL_APPS) currentPage = 0
+        if (target == Screen.RECENTS) loadRecents()
         screen = target
     }
 
@@ -433,7 +436,7 @@ class MainViewModel(
                 screen = Screen.HOME
                 true
             }
-            Screen.ALL_APPS -> {
+            Screen.ALL_APPS, Screen.RECENTS -> {
                 screen = Screen.HOME
                 true
             }
@@ -564,6 +567,16 @@ class MainViewModel(
             ctx.startActivity(intent)
         } catch (_: Exception) {
         }
+    }
+
+    fun loadRecents() {
+        val lastUsed = UsageHelper.lastUsedSinceBoot(ctx)
+        val launchers = UsageHelper.homePackages(ctx) + ctx.packageName
+        recentApps = getAllApps()
+            .filter { it.shortcutId.isEmpty() && it.packageName !in launchers }
+            .distinctBy { it.packageName }
+            .mapNotNull { app -> lastUsed[app.packageName]?.let { app to it } }
+            .sortedByDescending { it.second }
     }
 
     fun launchApp(

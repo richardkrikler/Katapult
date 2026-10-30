@@ -176,6 +176,7 @@ fun HomeScreen(
                 awaitEachGesture {
                     awaitFirstDown(requireUnconsumed = false)
                     var swipeAcc = 0f
+                    var swipeX = 0f
                     var pinchStart = 0f
                     var pinch = false
                     var pinchFired = false
@@ -200,10 +201,13 @@ fun HomeScreen(
                                 pressed[0].positionChange().x
                             }
                             swipeAcc += delta
+                            swipeX += pressed[0].positionChange().x
                         }
                     }
                     if (!pinch && viewModel.prefs.swipeUpAllApps && swipeAcc < -100f) {
                         viewModel.navigateTo(Screen.ALL_APPS)
+                    } else if (!pinch && swipeX > 100f) {
+                        viewModel.navigateTo(Screen.RECENTS)
                     }
                 }
             },

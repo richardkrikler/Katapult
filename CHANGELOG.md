@@ -2,6 +2,11 @@
 
 All notable changes to Katapult are documented here.
 
+## [Unreleased]
+
+### Added
+- **Recent apps**: swipe left to right on the home screen for a list of the apps you used since the phone started, newest first, with how long ago. Tap an app to return to it where you left it. Swipe back, or press Back, to return home. Needs Usage Access. Android doesn't let a normal app see which apps are really running, so this lists recently used apps. There's no button to close apps: MuditaOS doesn't let Katapult stop other apps, and Android already frees their memory when it needs to.
+
 ## [1.6-rk.2]
 
 ### Added

@@ -33,6 +33,9 @@
     <string name="cd_next">Next</string>
     <string name="cd_stop">Stop</string>
     <string name="cd_reset_order">Reset order</string>
+    <string name="recent_apps_empty">No recent apps</string>
+    <string name="recent_apps_need_usage">Recent apps need Usage Access</string>
+    <string name="recent_apps_just_now">Just now</string>
 
     <string name="set_left_app">Set left app</string>
     <string name="set_right_app">Set right app</string>

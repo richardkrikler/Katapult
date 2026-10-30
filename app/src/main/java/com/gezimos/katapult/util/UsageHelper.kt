@@ -46,17 +46,22 @@ object UsageHelper {
         ignoredCache = null
     }
 
+    fun homePackages(context: Context): Set<String> =
+        try {
+            val homeIntent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
+            context.packageManager.queryIntentActivities(homeIntent, PackageManager.MATCH_ALL)
+                .map { it.activityInfo.packageName }
+                .toSet()
+        } catch (_: Exception) {
+            emptySet()
+        }
+
     fun ignoredPackages(context: Context): Set<String> {
         val now = SystemClock.elapsedRealtime()
         ignoredCache?.let { if (now - ignoredAt < TTL_MS) return it }
-        val ignored = mutableSetOf<String>()
+        val ignored = homePackages(context).toMutableSet()
         try {
-            val pm = context.packageManager
-            val homeIntent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
-            pm.queryIntentActivities(homeIntent, PackageManager.MATCH_ALL).forEach {
-                ignored.add(it.activityInfo.packageName)
-            }
-            pm.resolveActivity(Intent(Settings.ACTION_SETTINGS), 0)?.let {
+            context.packageManager.resolveActivity(Intent(Settings.ACTION_SETTINGS), 0)?.let {
                 ignored.add(it.activityInfo.packageName)
             }
         } catch (_: Exception) {
@@ -64,6 +69,20 @@ object UsageHelper {
         ignoredCache = ignored
         ignoredAt = now
         return ignored
+    }
+
+    // Uncached: the recents list must reflect the app just left.
+    fun lastUsedSinceBoot(context: Context): Map<String, Long> {
+        val end = System.currentTimeMillis()
+        val boot = end - SystemClock.elapsedRealtime()
+        return try {
+            val usm = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+            (usm.queryAndAggregateUsageStats(boot, end) ?: emptyMap())
+                .mapValues { it.value.lastTimeUsed }
+                .filterValues { it > boot }
+        } catch (_: Exception) {
+            emptyMap()
+        }
     }
 
     fun stats(context: Context): Map<String, UsageStats> {
