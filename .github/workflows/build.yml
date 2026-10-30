@@ -9,7 +9,13 @@ permissions:
   contents: write
 
 jobs:
+  checks:
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+
   build:
+    needs: checks
     runs-on: ubuntu-latest
 
     steps:
@@ -42,14 +48,14 @@ jobs:
           test -n "$KEYSTORE_BASE64" || { echo "::error::KEYSTORE_BASE64 secret is missing"; exit 1; }
           echo "$KEYSTORE_BASE64" | base64 -d > $GITHUB_WORKSPACE/keystore.jks
 
-      - name: Test and build release APK
+      - name: Build release APK
         env:
           KEYSTORE_FILE: ${{ github.workspace }}/keystore.jks
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          ./gradlew testDebugUnitTest assembleRelease
+          ./gradlew assembleRelease
           mv app/build/outputs/apk/release/*.apk "katapult-v$VERSION_NAME.apk"
 
       # The matching "## [x]" section of CHANGELOG.md; GitHub's generated notes follow it.
