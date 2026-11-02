@@ -86,6 +86,8 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.NotificationManagerCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import com.gezimos.katapult.MainActivity
 import com.gezimos.katapult.MainViewModel
 import com.gezimos.katapult.R
@@ -238,55 +240,52 @@ fun SettingsScreen(viewModel: MainViewModel) {
     var screensaverOnPower by remember { mutableStateOf(prefs.screensaverOnPower) }
     var screensaverAppIcon by remember { mutableStateOf(ScreensaverShortcut.isIconEnabled(context)) }
 
-    // Poll notification listener permission to sync toggle state
-    LaunchedEffect(context) {
-        while (true) {
-            kotlinx.coroutines.delay(1000)
-            val hasPermission = NotificationManagerCompat.getEnabledListenerPackages(context)
-                .contains(context.packageName)
-            if (notificationIndicators != hasPermission) {
-                notificationIndicators = hasPermission
-                prefs.notificationIndicators = hasPermission
-            }
-            val serviceOn = LockscreenWidgetService.isEnabled(context)
-            if (actionServiceEnabled != serviceOn) actionServiceEnabled = serviceOn
-            if (serviceOn && pendingServiceToggles.isNotEmpty()) {
-                for (pending in pendingServiceToggles.toList()) {
-                    when (pending) {
-                        "clockCover" -> {
-                            hideStatusBarClock = true
-                            prefs.hideStatusBarClock = true
-                            LockscreenWidgetService.onLauncherForeground(true)
-                        }
-                        "widget" -> {
-                            lockscreenWidget = true
-                            prefs.lockscreenWidget = true
-                        }
-                        "music" -> {
-                            lockscreenMusicWidget = true
-                            prefs.lockscreenMusicWidget = true
-                        }
-                        "power" -> {
-                            screensaverOnPower = true
-                            prefs.screensaverOnPower = true
-                        }
+    // Re-sync permission-dependent toggles whenever we come back from a system screen
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        val hasPermission = NotificationManagerCompat.getEnabledListenerPackages(context)
+            .contains(context.packageName)
+        if (notificationIndicators != hasPermission) {
+            notificationIndicators = hasPermission
+            prefs.notificationIndicators = hasPermission
+        }
+        val serviceOn = LockscreenWidgetService.isEnabled(context)
+        if (actionServiceEnabled != serviceOn) actionServiceEnabled = serviceOn
+        if (serviceOn && pendingServiceToggles.isNotEmpty()) {
+            for (pending in pendingServiceToggles.toList()) {
+                when (pending) {
+                    "clockCover" -> {
+                        hideStatusBarClock = true
+                        prefs.hideStatusBarClock = true
+                        LockscreenWidgetService.onLauncherForeground(true)
+                    }
+                    "widget" -> {
+                        lockscreenWidget = true
+                        prefs.lockscreenWidget = true
+                    }
+                    "music" -> {
+                        lockscreenMusicWidget = true
+                        prefs.lockscreenMusicWidget = true
+                    }
+                    "power" -> {
+                        screensaverOnPower = true
+                        prefs.screensaverOnPower = true
                     }
                 }
-                pendingServiceToggles.clear()
             }
-            val sortPending = pendingSortMode
-            if (sortPending != null && UsageHelper.hasPermission(context)) {
-                appSortMode = sortPending
-                prefs.appSortMode = sortPending
-                pendingSortMode = null
-                viewModel.loadApps()
-            }
-            val messagePending = pendingLockscreenMessage
-            if (messagePending != null && serviceOn) {
-                lockscreenMessage = messagePending
-                prefs.lockscreenMessage = messagePending
-                pendingLockscreenMessage = null
-            }
+            pendingServiceToggles.clear()
+        }
+        val sortPending = pendingSortMode
+        if (sortPending != null && UsageHelper.hasPermission(context)) {
+            appSortMode = sortPending
+            prefs.appSortMode = sortPending
+            pendingSortMode = null
+            viewModel.loadApps()
+        }
+        val messagePending = pendingLockscreenMessage
+        if (messagePending != null && serviceOn) {
+            lockscreenMessage = messagePending
+            prefs.lockscreenMessage = messagePending
+            pendingLockscreenMessage = null
         }
     }
 
@@ -1465,12 +1464,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
 
     if (showPermissionsSheet) {
         var permTick by remember { mutableIntStateOf(0) }
-        LaunchedEffect(Unit) {
-            while (true) {
-                kotlinx.coroutines.delay(2000)
-                permTick++
-            }
-        }
+        LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { permTick++ }
         val notifAccess = remember(permTick) {
             NotificationManagerCompat.getEnabledListenerPackages(context).contains(context.packageName)
         }

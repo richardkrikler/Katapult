@@ -8,12 +8,6 @@ import android.net.Uri
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -53,6 +47,8 @@ import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import com.gezimos.katapult.MainViewModel
 import com.gezimos.katapult.R
 import com.gezimos.katapult.Screen
@@ -70,32 +66,16 @@ fun OnboardingScreen(viewModel: MainViewModel) {
     var hasCallSmsPermission by remember { mutableStateOf(false) }
     var showHighlight by remember { mutableStateOf(false) }
 
-    // Flash animation for asterisks
-    val flashTransition = rememberInfiniteTransition(label = "flash")
-    val flashAlpha by flashTransition.animateFloat(
-        initialValue = 1f,
-        targetValue = 0f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(500, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse,
-        ),
-        label = "flashAlpha",
-    )
+    // Re-check permissions whenever we come back from a system screen
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        hasNotificationPermission = NotificationManagerCompat.getEnabledListenerPackages(context)
+            .contains(context.packageName)
 
-    // Poll permission state
-    LaunchedEffect(context) {
-        while (true) {
-            hasNotificationPermission = NotificationManagerCompat.getEnabledListenerPackages(context)
-                .contains(context.packageName)
+        isDefaultLauncher = DeviceHelper.isDefaultLauncher(context)
 
-            isDefaultLauncher = DeviceHelper.isDefaultLauncher(context)
-
-            hasCallSmsPermission =
-                ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(context, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED
-
-            kotlinx.coroutines.delay(1000)
-        }
+        hasCallSmsPermission =
+            ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED
     }
 
     val allDone = hasNotificationPermission && isDefaultLauncher &&
@@ -205,7 +185,8 @@ fun OnboardingScreen(viewModel: MainViewModel) {
             text = stringResource(R.string.required_hint),
             fontSize = 14.sp,
             fontFamily = LatoFamily,
-            color = ink.copy(alpha = if (showHighlight && !allDone) flashAlpha else 1f),
+            fontWeight = if (showHighlight && !allDone) FontWeight.Bold else FontWeight.Normal,
+            color = ink,
             modifier = Modifier.padding(top = 8.dp),
         )
 
