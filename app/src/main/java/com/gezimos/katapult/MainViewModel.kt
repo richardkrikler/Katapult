@@ -81,7 +81,7 @@ class MainViewModel(
         private set
     var currentPage by mutableIntStateOf(0)
         private set
-    var recentApps by mutableStateOf(listOf<Pair<AppModel, Long>>())
+    var recentApps by mutableStateOf(listOf<AppModel>())
         private set
     var clockTime by mutableStateOf("")
         private set
@@ -577,6 +577,7 @@ class MainViewModel(
             .distinctBy { it.packageName }
             .mapNotNull { app -> lastUsed[app.packageName]?.let { app to it } }
             .sortedByDescending { it.second }
+            .map { it.first }
     }
 
     fun launchApp(

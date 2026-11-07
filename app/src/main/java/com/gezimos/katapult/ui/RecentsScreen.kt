@@ -1,6 +1,5 @@
 package com.gezimos.katapult.ui
 
-import android.text.format.DateUtils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -22,13 +21,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsIgnoringVisibility
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
@@ -43,20 +38,16 @@ import com.gezimos.katapult.R
 import com.gezimos.katapult.Screen
 import com.gezimos.katapult.model.AppModel
 import com.gezimos.katapult.util.UsageHelper
-import kotlin.math.abs
 
 private val RecentRowHeight = 72.dp
 private val RecentIconSize = 48.dp
-private val PageRowBottomPadding = 16.dp
-private val PageRowHeight = ArrowSize + PageRowBottomPadding
 
-// Sits left of home; swipe right or the right arrow pages to older apps.
+// Sits left of home and shows one page only: older apps are quicker to find in All Apps.
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun RecentsScreen(viewModel: MainViewModel) {
     val context = LocalContext.current
     val hasPermission = remember { UsageHelper.hasPermission(context) }
-    var page by remember { mutableIntStateOf(0) }
 
     // False positive: maxHeight is read below.
     @Suppress("UnusedBoxWithConstraintsScope")
@@ -74,50 +65,33 @@ fun RecentsScreen(viewModel: MainViewModel) {
             .windowInsetsPadding(WindowInsets.navigationBarsIgnoringVisibility)
             .padding(PagePadding),
     ) {
-        // Sized in one pass, so the page row never appears late and pushes a row to the next page.
         val apps = viewModel.recentApps
         val fits = (maxHeight / RecentRowHeight).toInt().coerceAtLeast(1)
-        val showPageRow = !viewModel.prefs.hideArrowButtons && apps.size > fits
-        val perPage = if (showPageRow) ((maxHeight - PageRowHeight) / RecentRowHeight).toInt().coerceAtLeast(1) else fits
-        val totalPages = ((apps.size + perPage - 1) / perPage).coerceAtLeast(1)
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .horizontalSwipe(totalPages) { toRight ->
-                    if (toRight) {
-                        if (page < totalPages - 1) page++
-                    } else if (page > 0) {
-                        page--
-                    } else {
-                        viewModel.navigateTo(Screen.HOME)
-                    }
-                },
+                .swipeLeftToHome { viewModel.navigateTo(Screen.HOME) },
         ) {
-            Column(Modifier.fillMaxWidth().weight(1f)) {
-                if (!hasPermission || apps.isEmpty()) {
-                    RecentsEmpty(hasPermission)
-                } else {
-                    apps.drop(page * perPage).take(perPage).forEach { (app, lastUsed) ->
-                        RecentRow(viewModel, app, lastUsed)
-                    }
+            if (!hasPermission || apps.isEmpty()) {
+                RecentsEmpty(hasPermission)
+            } else {
+                apps.take(fits).forEach { app ->
+                    RecentRow(viewModel, app)
                 }
             }
-            if (showPageRow) RecentsPageRow(page, totalPages) { page = it }
         }
     }
 }
 
-private fun Modifier.horizontalSwipe(
-    key: Any,
-    onSwipe: (toRight: Boolean) -> Unit,
-) = pointerInput(key) {
-    var accumulated = 0f
-    detectHorizontalDragGestures(
-        onDragStart = { accumulated = 0f },
-        onDragEnd = { if (abs(accumulated) > 17.5.dp.toPx()) onSwipe(accumulated > 0) },
-        onHorizontalDrag = { _, dragAmount -> accumulated += dragAmount },
-    )
-}
+private fun Modifier.swipeLeftToHome(onHome: () -> Unit) =
+    pointerInput(Unit) {
+        var accumulated = 0f
+        detectHorizontalDragGestures(
+            onDragStart = { accumulated = 0f },
+            onDragEnd = { if (accumulated < -17.5.dp.toPx()) onHome() },
+            onHorizontalDrag = { _, dragAmount -> accumulated += dragAmount },
+        )
+    }
 
 @Composable
 private fun RecentsEmpty(hasPermission: Boolean) {
@@ -155,63 +129,13 @@ private fun RecentsEmpty(hasPermission: Boolean) {
 }
 
 @Composable
-private fun RecentsPageRow(
-    page: Int,
-    totalPages: Int,
-    onPage: (Int) -> Unit,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 8.dp, end = 8.dp, bottom = PageRowBottomPadding),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        // Arrows line up with the icon column and the right edge of RecentRow.
-        Box(Modifier.width(RecentIconSize), contentAlignment = Alignment.Center) {
-            if (page > 0) ArrowButton(R.drawable.ic_arrow_left) { onPage(page - 1) }
-        }
-        Row(Modifier.weight(1f), horizontalArrangement = Arrangement.Center) {
-            for (i in 0 until totalPages) {
-                Box(
-                    Modifier
-                        .padding(horizontal = 4.dp)
-                        .size(8.dp)
-                        .then(
-                            if (i == page) {
-                                Modifier.background(LocalInk.current, CircleShape)
-                            } else {
-                                Modifier.border(1.5.dp, LocalInk.current, CircleShape)
-                            },
-                        ),
-                )
-            }
-        }
-        Box(Modifier.width(RecentIconSize), contentAlignment = Alignment.CenterEnd) {
-            if (page < totalPages - 1) ArrowButton(R.drawable.ic_arrow_right) { onPage(page + 1) }
-        }
-    }
-}
-
-@Composable
 private fun RecentRow(
     viewModel: MainViewModel,
     app: AppModel,
-    lastUsed: Long,
 ) {
     val context = LocalContext.current
-    val now = System.currentTimeMillis()
     val sizePx = with(LocalDensity.current) { RecentIconSize.roundToPx() }
     val bitmap = rememberAppIcon(app.packageName, app.activityName, "", sizePx, 0)
-    val ago = if (now - lastUsed < DateUtils.MINUTE_IN_MILLIS) {
-        stringResource(R.string.recent_apps_just_now)
-    } else {
-        DateUtils.getRelativeTimeSpanString(
-            lastUsed,
-            now,
-            DateUtils.MINUTE_IN_MILLIS,
-            DateUtils.FORMAT_ABBREV_RELATIVE,
-        ).toString()
-    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -222,22 +146,14 @@ private fun RecentRow(
     ) {
         AppIconCircle(bitmap = bitmap, size = RecentIconSize)
         Spacer(Modifier.width(16.dp))
-        Column(Modifier.weight(1f)) {
-            Text(
-                text = app.label,
-                fontSize = 18.sp,
-                fontFamily = LatoFamily,
-                color = LocalInk.current,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            Text(
-                text = ago,
-                fontSize = 14.sp,
-                fontFamily = LatoFamily,
-                color = LocalInk.current,
-                maxLines = 1,
-            )
-        }
+        Text(
+            text = app.label,
+            modifier = Modifier.weight(1f),
+            fontSize = 18.sp,
+            fontFamily = LatoFamily,
+            color = LocalInk.current,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
