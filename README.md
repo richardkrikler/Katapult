@@ -134,6 +134,11 @@ Check the Notification Log. If Android doesn't clear it, Katapult can't either.
 ### How to disable notification dots for a specific app
 There are no allowlists. Go to Settings > App Notifications, tap the app, and disable "Allow notification dot".
 
+## Development
+
+- [Testing a local build on a Mudita Kompakt](docs/testing-on-kompakt.md)
+- [Releasing](docs/releasing.md)
+
 ## Acknowledgments
 
 - The experimental lockscreen widget's approach — drawing over the keyguard through an accessibility overlay — was inspired by [Lockscreen Widgets](https://github.com/zacharee/LockscreenWidgets) by Zachary Wander. Katapult's implementation is its own; no code was copied.
