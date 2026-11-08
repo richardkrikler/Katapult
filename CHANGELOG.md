@@ -2,6 +2,12 @@
 
 All notable changes to Katapult are documented here.
 
+## [1.6-rk.4]
+
+### Changed
+- **Recent apps** is calmer: one page with only as many apps as fit, newest first, and no "how long ago" under each name. Older apps are in All Apps.
+- Onboarding and Settings check permissions when you come back to them, instead of every 1–2 seconds, so the E-ink screen no longer keeps refreshing. The "required" hint in onboarding turns bold instead of blinking.
+
 ## [1.6-rk.3]
 
 ### Added
